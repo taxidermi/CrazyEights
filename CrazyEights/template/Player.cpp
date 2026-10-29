@@ -1,6 +1,8 @@
 #include "Player.h"
 
 #include "../src/Utils.h"
+#include "../src/Round.h"
+#include "Deck.h"
 
 Player::Player()
 {
@@ -138,7 +140,63 @@ std::vector<Card*> Player::GetMatchableCards(Card* otherCard)
 PlayerTurn Player::AskPlayerForTurn(Card* topCard)
 {
 	bool canPlayerMatchCard = CanPlayerMatchCard(topCard);
-	std::string askMessage = "What would you like to do? Draw [1], Place [" + std::string(canPlayerMatchCard ? "2]" : "You have no matching cards!]") + ": ";
+	std::string askMessage = "What would you like to do? Draw [1], Place [" + std::string(canPlayerMatchCard ? "2]" : "No matching cards]") + ": ";
 	int playerTurnInput = Utils::AskUserForInput(askMessage, 1, canPlayerMatchCard ? 2 : 1);
 	return static_cast<PlayerTurn>(playerTurnInput - 1); // We - 1 from it because the user input option starts at 1 (better for user)
+}
+
+
+PlayerTurnResult Player::HandlePlayerTurn(Round* round)
+{
+	PlayerTurnResult turnResult = PlayerTurnResult::PASS;
+
+	PlayerTurn playerTurn = AskPlayerForTurn(round->GetDiscardPile()->PeekTopCard());
+	switch (playerTurn)
+	{
+		case PlayerTurn::DRAW:
+		{
+			// Draw card(s) until
+			Card* drawnCard = nullptr;
+			while (drawnCard == nullptr || !drawnCard->DoesCardMatch(round->GetDiscardPile()->PeekTopCard()))
+			{
+				drawnCard = round->GetCardDeck()->GetTopCard();
+				AddCard(drawnCard);
+				std::cout << "Drew card: " << drawnCard->ToString() << "\n";
+			}
+			// Give player option to place or keep(?) card
+			int playerOption = Utils::AskUserForInput("What would you like to do with the drawn card? "
+									   "([0] Keep, [1] Place): ", 0, 1);
+			if (playerOption == 0) // Keep drawn card
+				std::cout << "Keeping card, "; // no \n, adds the "ending turn" line to it
+			else if (playerOption == 1) // Place drawn card
+			{
+				// Take and place card onto discard pile. Will check if player wins
+				if (!round->DiscardCard(this, drawnCard))
+				{
+					std::cout << "[ERROR] Failed to place drawn card!\n";
+					break;
+				}
+			}
+			break;
+		}
+		case PlayerTurn::PLACE:
+		{
+			std::vector<Card*> matchableCards = GetMatchableCards(round->GetDiscardPile()->PeekTopCard());
+			std::cout << "Matchable cards: ";
+			Utils::PrintCards(matchableCards, true);
+			int cardToPlaceIndex = Utils::AskUserForInput("What card would you like to place?: ", 0, matchableCards.size() - 1);
+			Card* cardToPlace = matchableCards[cardToPlaceIndex];
+			// Take and place card onto discard pile. Will check if player wins
+			if (!round->DiscardCard(this, cardToPlace))
+			{
+				std::cout << "[ERROR] Failed to place card from index " << cardToPlaceIndex << "!\n";
+				break;
+			}
+			break;
+		}
+	default:
+		break;
+	}
+
+	return turnResult;
 }

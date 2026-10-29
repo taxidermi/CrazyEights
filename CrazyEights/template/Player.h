@@ -4,10 +4,19 @@
 #include <vector>
 #include "Card.h"
 
+class Round;
+
 enum class PlayerTurn
 {
 	DRAW,
 	PLACE,
+	MAX
+};
+
+enum class PlayerTurnResult
+{
+	PASS, // Pass to next player
+	WIN, // Player won
 	MAX
 };
 
@@ -146,5 +155,12 @@ public:
 	* \param topCard The card that is on top of the discard pile, which the player will need to match.
 	*/
 	virtual PlayerTurn AskPlayerForTurn(Card* topCard);
+
+	/**
+	 * Handle this player's turn. Gives the player turn options, waits for input and then performs the turn action.
+	 * @param round Reference to the current round object.
+	 * @return
+	 */
+	virtual PlayerTurnResult HandlePlayerTurn(Round* round);
 };
 

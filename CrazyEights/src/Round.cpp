@@ -1,6 +1,8 @@
 #include "Round.h"
 
 #include <utility>
+#include <algorithm>
+#include <random>
 
 #include "../src/Utils.h"
 #include "../template/Deck.h"
@@ -56,6 +58,11 @@ void Round::StartRound()
 	if (cardDeck->IsEmpty())
 		cardDeck->FillDeck();
 	cardDeck->Shuffle(); // Gets shuffled anyway when being created, but doesn't hurt!
+	// Setup players
+	// Shuffle players array to randomise the order
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::ranges::shuffle(players, g);
 	// Add 5 cards to each player's hand
 	for (Player* player : players)
 	{
@@ -79,55 +86,14 @@ void Round::StartRound()
 			std::cout << "Your hand: ";
 			player->OutputHand();
 			// Print top card
-			std::cout << "Top card: " << discardPile->PeekTopCard()->ToString() << "\n";
-			PlayerTurn playerTurn = player->AskPlayerForTurn(discardPile->PeekTopCard());
-			switch (playerTurn)
+			std::cout << "Top card: " << GetDiscardPile()->PeekTopCard()->ToString() << "\n";
+			// Handle player's turn
+			PlayerTurnResult turnResult = player->HandlePlayerTurn(this);
+			if (turnResult == PlayerTurnResult::PASS) // TurnResult == WIN
 			{
-				case PlayerTurn::DRAW:
-				{
-					// Draw card(s) until
-					Card* drawnCard = nullptr;
-					while (drawnCard == nullptr || !drawnCard->DoesCardMatch(discardPile->PeekTopCard()))
-					{
-						drawnCard = cardDeck->GetTopCard();
-						player->AddCard(drawnCard);
-						std::cout << "Drew card: " << drawnCard->ToString() << "\n";
-					}
-					// Give player option to place or keep(?) card
-					int playerOption = Utils::AskUserForInput("What would you like to do with the drawn card? "
-											   "[0] Keep, [1] Place): ", 0, 1);
-					if (playerOption == 0) // Keep drawn card
-						std::cout << "Keeping card, "; // no \n, adds the "ending turn" line to it
-					else if (playerOption == 1) // Place drawn card
-					{
-						// Take and place card onto discard pile. Will check if player wins
-						if (!DiscardCard(player, drawnCard))
-						{
-							std::cout << "[ERROR] Failed to place drawn card!\n";
-							break;
-						}
-					}
-					break;
-				}
-				case PlayerTurn::PLACE:
-				{
-					std::vector<Card*> matchableCards = player->GetMatchableCards(discardPile->PeekTopCard());
-					std::cout << "Matchable cards: ";
-					Utils::PrintCards(matchableCards, true);
-					int cardToPlaceIndex = Utils::AskUserForInput("What card would you like to place?: ", 0, matchableCards.size() - 1);
-					Card* cardToPlace = matchableCards[cardToPlaceIndex];
-					// Take and place card onto discard pile. Will check if player wins
-					if (!DiscardCard(player, cardToPlace))
-					{
-						std::cout << "[ERROR] Failed to place card from index " << cardToPlaceIndex << "!\n";
-						break;
-					}
-					break;
-				}
-				default:
-					break;
+				std::cout << "Ending " << player->GetName() << "'s turn...\n";
+				break;
 			}
-			std::cout << "Ending " << player->GetName() << "'s turn...\n";
 		}
 	}
 	// Round over, back to Game::Start()
@@ -148,7 +114,7 @@ bool Round::DiscardCard(Player* player, Card* card)
 	if (player->GetHandSize() == 0)
 	{
 		std::cout << player->GetName() << " Wins! Ending round...\n";
-		UpdateRoundState(RoundState::FINISHED); // exits while loop
+		UpdateRoundState(RoundState::FINISHED); // Exits while loop
 	}
 	return true;
 }
