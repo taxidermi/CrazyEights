@@ -11,7 +11,7 @@
 Round::Round(std::vector<Player*> plrs)
 {
 	players = std::move(plrs);
-	cardDeck = new Deck(true); // Fill deck with cards
+	cardDeck = new Deck(); // Don't fill deck with cards. It gets filled in StartRound()
 	discardPile = new Deck(); // Leave discard deck empty
 }
 
@@ -54,22 +54,25 @@ void Round::UpdateRoundState(RoundState newState)
 void Round::StartRound()
 {
 	UpdateRoundState(RoundState::STARTING);
-	// Setup decks
-	if (cardDeck->IsEmpty())
-		cardDeck->FillDeck();
-	cardDeck->Shuffle(); // Gets shuffled anyway when being created, but doesn't hurt!
+	// Setup card deck
+	if (!cardDeck->IsEmpty())
+		cardDeck->Clear();
+	int cardDeckSize = Utils::AskUserForInput("Please enter the number of card decks you want to play with (1-10): ",
+		1, 10);
+	cardDeck->FillDeck(cardDeckSize);
+	std::cout << "Created card deck with " << cardDeck->GetSize() << " cards!\n";
+	cardDeck->Shuffle();
 	// Setup players
 	// Shuffle players array to randomise the order
 	std::random_device rd;
 	std::mt19937 g(rd());
-	std::ranges::shuffle(players, g);
+	std::shuffle(this->players.begin(), this->players.end(), g);
 	// Add 5 cards to each player's hand
 	for (Player* player : players)
 	{
 		for (int i = 0; i < 5; i++)
 			player->AddCard(cardDeck->GetTopCard());
 	}
-
 	// Take the top card from the deck and place it in the discard pile
 	discardPile->AddCard(cardDeck->GetTopCard());
 	// Start game
@@ -101,7 +104,7 @@ void Round::StartRound()
 
 bool Round::DiscardCard(Player* player, Card* card)
 {
-	/// Remove card from player's hand (via reference)
+	// Remove card from player's hand (via reference)
 	if (card == nullptr || !player->RemoveCard(card))
 	{
 		std::cout << "[ERROR] Failed to place card!\n";
@@ -117,4 +120,18 @@ bool Round::DiscardCard(Player* player, Card* card)
 		UpdateRoundState(RoundState::FINISHED); // Exits while loop
 	}
 	return true;
+}
+
+void Round::RefillDeck()
+{
+	// Store the current top card from the discard pile
+	Card* currentTopCard = discardPile->GetTopCard();
+	// Get the top card each time and add it to the card deck
+	for (int i = 0; i < discardPile->GetSize(); i++)
+	{
+		Card* card = discardPile->GetTopCard();
+		if (card == nullptr)
+			continue;
+		cardDeck->AddCard(card);
+	}
 }

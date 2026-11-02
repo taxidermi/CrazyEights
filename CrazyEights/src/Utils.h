@@ -28,6 +28,7 @@ namespace Utils
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore bad input
 			std::cout << "Invalid input! " << askMessage;
 		}
+
 		return userInput;
 	}
 

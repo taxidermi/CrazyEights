@@ -52,4 +52,9 @@ public:
 	 * @return True if the card was successfully removed and placed.
 	 */
 	bool DiscardCard(Player* player, Card* card);
+
+	/**
+	 * Refill the card deck with the discard pile. Leaves the current top card alone.
+	 */
+	void RefillDeck();
 };

@@ -17,15 +17,12 @@ private:
 
 public:
 	/**
-	 * Constructor to make a new deck. Does not pre-fill the deck with ordered cards, use Deck(true).
+	 * Constructor to make a new deck. Can pre-fill the deck with ordered cards, does not by default.
 	 * Also sets the seed for random number generation (required for shuffling the deck, see shuffle() function). Current time is used for seed (see https://en.cppreference.com/w/cpp/chrono/c/time) (Kyle note: NO IT DOESN'T)
+	 * \param fillDeck Should this deck be filled with cards.
+	 * \param fillDeckTimes How many times will the deck be filled (like a multiple, 52 * fillDeckTimes)
 	 */
-	Deck();
-
-	/**
-	* Constructor to make a new deck. Pre-fills the deck with ordered cards by default.
-	*/
-	Deck(bool fillDeck);
+	Deck(bool fillDeck = false, int fillDeckTimes = 1);
 
 	/**
 	 * Gets the size of the deck.
@@ -52,8 +49,9 @@ public:
 
 	/**
 	 * Fills the deck with all 52 cards. Does not shuffle the deck.
+	 * \param times How many times will the deck get filled (like a multiple).
 	 */
-	void FillDeck();
+	void FillDeck(int times = 1);
 
 	/**
 	 * Adds a new card to the deck. Card is placed at the back of the deck vector.

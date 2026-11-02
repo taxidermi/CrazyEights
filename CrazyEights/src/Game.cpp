@@ -31,8 +31,8 @@ void Game::CreatePlayers(int numOfPlayers)
 {
 	for (int i = 0; i < numOfPlayers; i++)
 	{
-		std::string playerName = "Player " + std::to_string(i + 1); // + 1 because i starts at 0
-		playerName = Utils::AskUserForInput<std::string>("Enter " + playerName + "'s name: ");
+		const auto playerName = Utils::AskUserForInput<std::string>("Enter Player " +
+			std::to_string(i + 1) + "'s name: "); // i + 1 because i starts at 0
 		players.push_back(new Player(playerName));
 	}
 	std::cout << "Created " << players.size() << " players!\n";

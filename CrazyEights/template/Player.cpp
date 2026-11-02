@@ -149,7 +149,6 @@ PlayerTurn Player::AskPlayerForTurn(Card* topCard)
 PlayerTurnResult Player::HandlePlayerTurn(Round* round)
 {
 	PlayerTurnResult turnResult = PlayerTurnResult::PASS;
-
 	PlayerTurn playerTurn = AskPlayerForTurn(round->GetDiscardPile()->PeekTopCard());
 	switch (playerTurn)
 	{
@@ -159,7 +158,12 @@ PlayerTurnResult Player::HandlePlayerTurn(Round* round)
 			Card* drawnCard = nullptr;
 			while (drawnCard == nullptr || !drawnCard->DoesCardMatch(round->GetDiscardPile()->PeekTopCard()))
 			{
+				// If the draw deck is empty, refill it using the discard pile
+				if (round->GetCardDeck()->IsEmpty())
+					round->RefillDeck();
 				drawnCard = round->GetCardDeck()->GetTopCard();
+				if (drawnCard == nullptr)
+					continue;
 				AddCard(drawnCard);
 				std::cout << "Drew card: " << drawnCard->ToString() << "\n";
 			}
