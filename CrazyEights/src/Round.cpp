@@ -93,10 +93,7 @@ void Round::StartRound()
 			// Handle player's turn
 			PlayerTurnResult turnResult = player->HandlePlayerTurn(this);
 			if (turnResult == PlayerTurnResult::PASS) // TurnResult == WIN
-			{
 				std::cout << "Ending " << player->GetName() << "'s turn...\n";
-				break;
-			}
 		}
 	}
 	// Round over, back to Game::Start()
