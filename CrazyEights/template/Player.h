@@ -159,8 +159,31 @@ public:
 	/**
 	 * Handle this player's turn. Gives the player turn options, waits for input and then performs the turn action.
 	 * @param round Reference to the current round object.
-	 * @return
+	 * @return Result of their turn, if they win or pass their turn
 	 */
 	virtual PlayerTurnResult HandlePlayerTurn(Round* round);
+
+private:
+	/**
+	 * Handle this player placing a card. Happens during the 'HandlePlayerTurn' funcky-tion.
+	 * @param round Current round reference
+	 * @param card Card to place
+	 * @return True if the card was successfully removed, false if not/it failed.
+	 */
+	virtual bool HandlePlacingCard(Round* round, Card* card);
+
+public:
+	/**
+	 * Array of function wrappers for when a card gets added to this deck. Use like signals.
+	 */
+	std::vector<std::function<void(Card* card)>> OnCardAddedSignals = {};
+	/**
+	 * Array of function wrappers for when a card gets removed to this deck. Use like signals.
+	 */
+	std::vector<std::function<void(Card* card)>> OnCardRemovedSignals = {};
+
+private:
+	virtual void OnCardAdded(Card* card);
+	virtual void OnCardRemoved(Card* card);
 };
 

@@ -53,6 +53,8 @@ public:
 	 */
 	bool DiscardCard(Player* player, Card* card);
 
+	void OnRoundFinished(Player* winningPlayer);
+
 	/**
 	 * Refill the card deck with the discard pile. Leaves the current top card alone.
 	 */

@@ -40,6 +40,8 @@ std::vector<Card*> Player::GetHand()
 
 void Player::ClearHand()
 {
+	for (int i = GetHandSize() - 1; i >= 0; --i)
+		RemoveCard(i);
 	this->hand.clear();
 }
 
@@ -57,18 +59,24 @@ Card* Player::GetCard(int index)
 {
 	//Temporary variable must be created to return object after deleting card from vector.
 	Card* card = this->hand[index];
-	this->hand.erase(this->hand.begin() + index);
+	RemoveCard(index);
 	return card;
 }
 
 void Player::AddCard(Card* new_card)
 {
 	this->hand.push_back(new_card);
+	for (const std::function<void(Card*)>& onCardAddedFunc : OnCardAddedSignals)
+		onCardAddedFunc(new_card);
+	OnCardAdded(new_card);
 }
 
 void Player::RemoveCard(int index)
 {
+	Card* card = this->hand[index];
 	this->hand.erase(this->hand.begin() + index);
+	for (const std::function<void(Card*)>& onCardRemovedFunc : OnCardRemovedSignals)
+		onCardRemovedFunc(card);
 }
 
 bool Player::RemoveCard(Card* cardToRemove)
@@ -145,7 +153,6 @@ PlayerTurn Player::AskPlayerForTurn(Card* topCard)
 	return static_cast<PlayerTurn>(playerTurnInput - 1); // We - 1 from it because the user input option starts at 1 (better for user)
 }
 
-
 PlayerTurnResult Player::HandlePlayerTurn(Round* round)
 {
 	PlayerTurnResult turnResult = PlayerTurnResult::PASS;
@@ -154,7 +161,7 @@ PlayerTurnResult Player::HandlePlayerTurn(Round* round)
 	{
 		case PlayerTurn::DRAW:
 		{
-			// Draw card(s) until
+			// Draw card(s) until a matching card is drawn
 			Card* drawnCard = nullptr;
 			while (drawnCard == nullptr || !drawnCard->DoesCardMatch(round->GetDiscardPile()->PeekTopCard()))
 			{
@@ -169,33 +176,26 @@ PlayerTurnResult Player::HandlePlayerTurn(Round* round)
 			}
 			// Give player option to place or keep(?) card
 			int playerOption = Utils::AskUserForInput("What would you like to do with the drawn card? "
-									   "([0] Keep, [1] Place): ", 0, 1);
-			if (playerOption == 0) // Keep drawn card
+									   "([1] Keep, [2] Place): ", 1, 2);
+			if (playerOption == 1) // Keep drawn card
 				std::cout << "Keeping card, "; // no \n, adds the "ending turn" line to it
-			else if (playerOption == 1) // Place drawn card
-			{
-				// Take and place card onto discard pile. Will check if player wins
-				if (!round->DiscardCard(this, drawnCard))
-				{
-					std::cout << "[ERROR] Failed to place drawn card!\n";
-					break;
-				}
-			}
+			else if (playerOption == 2) // Place drawn card
+				// Take and place card onto discard pile. Will check if player wins and handle the type of card
+				HandlePlacingCard(round, drawnCard);
 			break;
 		}
 		case PlayerTurn::PLACE:
 		{
 			std::vector<Card*> matchableCards = GetMatchableCards(round->GetDiscardPile()->PeekTopCard());
 			std::cout << "Matchable cards: ";
-			Utils::PrintCards(matchableCards, true);
-			int cardToPlaceIndex = Utils::AskUserForInput("What card would you like to place?: ", 0, matchableCards.size() - 1);
-			Card* cardToPlace = matchableCards[cardToPlaceIndex];
-			// Take and place card onto discard pile. Will check if player wins
-			if (!round->DiscardCard(this, cardToPlace))
-			{
-				std::cout << "[ERROR] Failed to place card from index " << cardToPlaceIndex << "!\n";
-				break;
-			}
+			// Print and ask user to pick a card to remove. The index is offset by 1, so they don't have to enter 0
+			// which is across the keyboard
+			Utils::PrintCards(matchableCards, true, 1);
+			int cardToPlaceIndex = Utils::AskUserForInput("What card would you like to place?: ", 1,
+				matchableCards.size());
+			Card* cardToPlace = matchableCards[cardToPlaceIndex - 1];
+			// Take and place card onto discard pile. Will check if player wins and handle the type of card
+			HandlePlacingCard(round, cardToPlace);
 			break;
 		}
 	default:
@@ -203,4 +203,38 @@ PlayerTurnResult Player::HandlePlayerTurn(Round* round)
 	}
 
 	return turnResult;
+}
+
+bool Player::HandlePlacingCard(Round* round, Card* card)
+{
+	// Take and place card onto discard pile
+	if (!round->DiscardCard(this, card))
+	{
+		std::cout << "[ERROR] Failed to place card: " << card->ToString() << "!\n";
+		return false;
+	}
+	// Check if player's hand is empty (they win!)
+	if (GetHandSize() == 0)
+	{
+		round->UpdateRoundState(RoundState::FINISHED); // Exit game while loop
+		round->OnRoundFinished(this); // This player won!
+	}
+	// Check if the card placed was an 8. If so, give the player the option to pick a suit
+	else if (card->GetRank() == 8)
+	{
+		// Offset option/index by 1 so user doesn't have to press 0
+		int newSuitOption = Utils::AskUserForInput("An eight was played! Pick the next suit ([1] Clubs, "
+											 "[2] Diamonds, [3] Hearts, [4] Spades): ", 1, 4);
+		card->SetSuit(Utils::GetCardSuitFromOption(newSuitOption - 1));
+		std::cout << "Suit picked: " << card->GetSuit() << "\n";
+	}
+	return true;
+}
+
+void Player::OnCardAdded(Card* card)
+{
+}
+
+void Player::OnCardRemoved(Card* card)
+{
 }

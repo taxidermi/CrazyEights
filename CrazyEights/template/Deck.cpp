@@ -65,6 +65,8 @@ void Deck::AddCard(Card* new_card)
 	if (new_card == nullptr)
 		return;
 	this->deck_vector.push_back(new_card);
+	for (const std::function<void(Card*)>& onCardAddedFunc : OnCardAddedSignals)
+		onCardAddedFunc(new_card);
 }
 
 Card* Deck::PeekCard(int index)
@@ -86,7 +88,7 @@ Card* Deck::GetCard(int index)
 		return nullptr;
 	//Temporary variable must be created to return object after deleting card from vector.
 	Card* card = this->deck_vector[index];
-	this->deck_vector.erase(this->deck_vector.begin() + index);
+	RemoveCard(index);
 	return card;
 }
 
@@ -94,7 +96,10 @@ void Deck::RemoveCard(int index)
 {
 	if (index < 0 || index > this->deck_vector.size() - 1)
 		return;
+	Card* card = this->deck_vector[index];
 	this->deck_vector.erase(this->deck_vector.begin() + index);
+	for (const std::function<void(Card*)>& onCardRemovedFunc : OnCardRemovedSignals)
+		onCardRemovedFunc(card);
 }
 
 Card* Deck::GetTopCard()

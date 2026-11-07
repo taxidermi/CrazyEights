@@ -35,20 +35,25 @@ void Game::CreatePlayers(int numOfPlayers)
 			std::to_string(i + 1) + "'s name: "); // i + 1 because i starts at 0
 		players.push_back(new Player(playerName));
 	}
-	std::cout << "Created " << players.size() << " players!\n";
+	std::string output = "Created " + std::to_string(numOfPlayers) + " player";
+	if (numOfPlayers > 1)
+		output += "s";
+	std::cout << output << "!\n";
 }
 
 void Game::CreateBotPlayers(int numOfBots)
 {
-	/*if (numOfBots == 0)
-		return;*/
 	for (int i = 0; i < numOfBots; i++)
-		players.push_back(new Bot(std::string("Bot " + i)));
-	std::cout << "Created " << numOfBots << " bots!\n";
+		players.push_back(new Bot(std::string("Bot " + std::to_string(i + 1))));
+	std::string output = "Created " + std::to_string(numOfBots) + " bot";
+	if (numOfBots > 1)
+		output += "s";
+	std::cout << output << "!\n";
 }
 
 void Game::Start()
 {
+	Utils::PrintTitle("SETUP PLAYERS", '=');
 	// Start by creating the player's and bot's. Both are added to the players array.
 	const int numOfPlayers = Utils::AskUserForInput("Please enter the number of players (1-8): ",
 		1, 8);
@@ -68,14 +73,15 @@ void Game::Start()
 		// Start the round
 		round->StartRound();
 		// Wait for round to finish (while loop)
+		Utils::PrintTitle("ROUND OVER", '=');
 		// Ask user if they want to restart or exit
-		int userGameOption = Utils::AskUserForInput("Please enter what you would like to do next (0 = restart, 1 = exit): ", 0, 1);
-		if (userGameOption == 0) // Restart
+		int userGameOption = Utils::AskUserForInput("Please enter what you would like to do next ([1]: Restart, [2]: Exit): ", 1, 2);
+		if (userGameOption == 1) // Restart
 		{
 			std::cout << "Restarting game...\n";
 			// Since we are in the while loop, it will go back to the top and restart the game, no further action needed
 		}
-		else if (userGameOption == 1) // Exit
+		else if (userGameOption == 2) // Exit
 			break; // Break out of this while loop
 	}
 

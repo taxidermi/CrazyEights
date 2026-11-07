@@ -53,6 +53,7 @@ void Round::UpdateRoundState(RoundState newState)
 
 void Round::StartRound()
 {
+	Utils::PrintTitle("STARTING ROUND", '=');
 	UpdateRoundState(RoundState::STARTING);
 	// Setup card deck
 	if (!cardDeck->IsEmpty())
@@ -77,6 +78,7 @@ void Round::StartRound()
 	discardPile->AddCard(cardDeck->GetTopCard());
 	// Start game
 	UpdateRoundState(RoundState::PLAYING);
+	Utils::PrintTitle("ROUND START", '=');
 	while (currentRoundState == RoundState::PLAYING)
 	{
 		// Loop through all players to let them perform their turn
@@ -85,18 +87,35 @@ void Round::StartRound()
 			// Check if the current round is finished before giving turn
 			if (currentRoundState == RoundState::FINISHED)
 				break;
-			std::cout << "--------------------\n" << player->GetName() << "'s turn\n";
+			Utils::PrintTitle(player->GetName() + "'s turn", '-');
 			std::cout << "Your hand: ";
 			player->OutputHand();
 			// Print top card
 			std::cout << "Top card: " << GetDiscardPile()->PeekTopCard()->ToString() << "\n";
 			// Handle player's turn
 			PlayerTurnResult turnResult = player->HandlePlayerTurn(this);
-			if (turnResult == PlayerTurnResult::PASS) // TurnResult == WIN
-				std::cout << "Ending " << player->GetName() << "'s turn...\n";
+			if (turnResult != PlayerTurnResult::WIN) // If player hasn't won, end their turn
+				std::cout << "End of " << player->GetName() << "'s turn\n";
 		}
 	}
 	// Round over, back to Game::Start()
+}
+
+void Round::OnRoundFinished(Player* winningPlayer)
+{
+	std::cout << winningPlayer->GetName() << " Wins! ";
+	// Total up the score for the winning player
+	int totalScore = 0;
+	for (Player* player : players)
+	{
+		if (player == winningPlayer)
+			continue;
+		for (Card* card : player->GetHand())
+			totalScore += card->GetCardScore();
+	}
+	winningPlayer->SetScore(totalScore);
+	std::cout << "Winning score: " << std::to_string(totalScore) << "\n";
+	std::cout << "Ending round...\n";
 }
 
 bool Round::DiscardCard(Player* player, Card* card)
@@ -110,12 +129,6 @@ bool Round::DiscardCard(Player* player, Card* card)
 	// Place card on to the top of the discard pile
 	discardPile->AddCard(card);
 	std::cout << "Placed card: " << card->ToString() << "\n";
-	// Check if player's hand is empty
-	if (player->GetHandSize() == 0)
-	{
-		std::cout << player->GetName() << " Wins! Ending round...\n";
-		UpdateRoundState(RoundState::FINISHED); // Exits while loop
-	}
 	return true;
 }
 

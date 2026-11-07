@@ -90,5 +90,13 @@ public:
 	 */
 	void RemoveCard(int index);
 
+	/**
+	 * Array of function wrappers for when a card gets added to this deck. Use like signals.
+	 */
+	std::vector<std::function<void(Card* card)>> OnCardAddedSignals = {};
+	/**
+	 * Array of function wrappers for when a card gets removed to this deck. Use like signals.
+	 */
+	std::vector<std::function<void(Card* card)>> OnCardRemovedSignals = {};
 };
 

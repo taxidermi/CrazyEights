@@ -1,12 +1,13 @@
 #pragma once
 #include <string>
+#include <vector>
+#include <functional>
 
 /**
  * @brief Card class represents a single card when instantiated.
  */
 class Card
 {
-private:
 	/**
 	 * Rank of card. Private, so must be accessed through getter and setter functions.
 	 */
@@ -59,5 +60,11 @@ public:
 	* \return True if the cards match one-another
 	*/
 	bool DoesCardMatch(Card* otherCard);
+
+	/**
+	 * Get the score value of this card.
+	 * @return The score value of this card.
+	 */
+	int GetCardScore();
 };
 
