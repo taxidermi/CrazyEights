@@ -18,7 +18,7 @@ PlayerTurnResult Bot::HandlePlayerTurn(Round* round)
     PlayerTurn playerTurn = AskPlayerForTurn(round->GetDiscardPile()->PeekTopCard());
     switch (playerTurn)
     {
-    case PlayerTurn::DRAW:
+        case PlayerTurn::DRAW:
         {
             // Draw card(s) until
             Card* drawnCard = nullptr;
@@ -38,19 +38,28 @@ PlayerTurnResult Bot::HandlePlayerTurn(Round* round)
             HandlePlacingCard(round, drawnCard);
             break;
         }
-    case PlayerTurn::PLACE:
+        case PlayerTurn::PLACE:
         {
-            std::vector<Card*> matchableCards = GetMatchableCards(round->GetDiscardPile()->PeekTopCard());
-            std::cout << "Matchable cards: ";
-            Utils::PrintCards(matchableCards, true, 1);
-            int cardToPlaceIndex = Utils::RandRange(0, matchableCards.size() - 1);
-            Card* cardToPlace = matchableCards[cardToPlaceIndex];
+            Card* cardToPlace = nullptr;
+            // See if the bot has an 8 to place
+            int eightCardIndex = FindCard(8);
+            if (eightCardIndex != -1)
+                cardToPlace = PeekCard(eightCardIndex);
+            // Otherwise, get the matching cards and pick a random one to place
+            else
+            {
+                std::vector<Card*> matchableCards = GetMatchableCards(round->GetDiscardPile()->PeekTopCard());
+                std::cout << "Matchable cards: ";
+                Utils::PrintCards(matchableCards, true, 1);
+                int cardToPlaceIndex = Utils::RandRange(0, matchableCards.size() - 1);
+                cardToPlace = matchableCards[cardToPlaceIndex];
+            }
             // Take and place card onto discard pile. Will check if player wins and handle the type of card
             HandlePlacingCard(round, cardToPlace);
             break;
         }
-    default:
-        break;
+        default:
+            break;
     }
 
     return turnResult;
@@ -61,7 +70,10 @@ bool Bot::HandlePlacingCard(Round* round, Card* card)
     // Take and place card onto discard pile
     if (!round->DiscardCard(this, card))
     {
-        std::cout << "[ERROR] Failed to place card: " << card->ToString() << "!\n";
+        std::cout << "[ERROR] Failed to discard card";
+        if (card != nullptr)
+            std::cout << ": " << card->ToString();
+        std::cout << "!\n";
         return false;
     }
     // Check if player's hand is empty (they win!)

@@ -144,6 +144,22 @@ public:
 	bool CanPlayerMatchCard(Card* otherCard);
 
 	/**
+	* Search the player's hand for a card with the given rank.
+	* \return The index of the first card found, -1 if no card was found.
+	*/
+	int FindCard(int rank);
+	/**
+	* Search the player's hand for a card with the given suit.
+	* \return The index of the first card found, -1 if no card was found.
+	*/
+	int FindCard(std::string suit);
+	/**
+	* Search the player's hand for a card with the given rank and suit.
+	* \return The index of the first card found, -1 if no card was found.
+	*/
+	int FindCard(int rank, std::string suit);
+
+	/**
 	 * Get all the cards that the player can match with the passed other card.
 	 * @param otherCard The other card to get all the cards the player can match with.
 	 * @return Vector of cards that can match the other card.

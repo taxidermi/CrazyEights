@@ -81,9 +81,9 @@ void Player::RemoveCard(int index)
 
 bool Player::RemoveCard(Card* cardToRemove)
 {
-	for (int i = 0; i < hand.size(); i++)
+	for (int i = 0; i < this->hand.size(); i++)
 	{
-		Card* card = hand[i];
+		Card* card = this->hand[i];
 		if (card == cardToRemove)
 		{
 			RemoveCard(i);
@@ -106,7 +106,7 @@ void Player::OutputHand(bool includeCardIndex)
 	//Iterate through each card in hand and output toString for each one
 	/*for (Card* c : this->hand)
 		std::cout << c->ToString() << std::endl;*/
-	Utils::PrintCards(hand, includeCardIndex);
+	Utils::PrintCards(this->hand, includeCardIndex);
 }
 
 void Player::ChangeScoreBy(int toAdd)
@@ -134,10 +134,49 @@ bool Player::CanPlayerMatchCard(Card* otherCard)
 	return false;
 }
 
+int Player::FindCard(int rank)
+{
+	for (int i = 0; i < GetHandSize(); i++)
+	{
+		Card* card = PeekCard(i);
+		if (card == nullptr)
+			continue;
+		if (card->GetRank() == rank)
+			return i;
+	}
+	return -1;
+}
+
+int Player::FindCard(std::string suit)
+{
+	for (int i = 0; i < GetHandSize(); i++)
+	{
+		Card* card = PeekCard(i);
+		if (card == nullptr)
+			continue;
+		if (card->GetSuit() == suit)
+			return i;
+	}
+	return -1;
+}
+
+int Player::FindCard(int rank, std::string suit)
+{
+	for (int i = 0; i < GetHandSize(); i++)
+	{
+		Card* card = PeekCard(i);
+		if (card == nullptr)
+			continue;
+		if (card->GetRank() == rank && card->GetSuit() == suit)
+			return i;
+	}
+	return -1;
+}
+
 std::vector<Card*> Player::GetMatchableCards(Card* otherCard)
 {
 	std::vector<Card*> matchableCards = {};
-	for (Card* card : hand)
+	for (Card* card : this->hand)
 	{
 		if (card->DoesCardMatch(otherCard))
 			matchableCards.push_back(card);

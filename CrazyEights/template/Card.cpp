@@ -28,18 +28,28 @@ void Card::SetSuit(std::string new_suit)
 
 std::string Card::ToString()
 {
-	return std::to_string(this->rank) + " of " + this->GetSuit();
+	switch (this->rank)
+	{
+		case 11:
+			return "Jack of " + this->GetSuit();
+		case 12:
+			return "Queen of " + this->GetSuit();
+		case 13:
+			return "King of " + this->GetSuit();
+		default:
+			return std::to_string(this->rank) + " of " + this->GetSuit();
+	}
 }
 
 bool Card::DoesCardMatch(Card* otherCard)
 {
-	return otherCard->GetRank() == rank || otherCard->GetSuit() == suit ||
+	return otherCard->GetRank() == this->rank || otherCard->GetSuit() == this->suit ||
 		this->GetRank() == 8; // The eights are crazy!!! (like a wildcard)
 }
 
 int Card::GetCardScore()
 {
-	switch (rank)
+	switch (this->rank)
 	{
 		case 8: // Eights are crazy!!!
 			return 50;
@@ -48,6 +58,6 @@ int Card::GetCardScore()
 		case 13: // Face cards return 10
 			return 10;
 		default: // Rest of the cards return the face value
-			return rank;
+			return this->rank;
 	}
 }
