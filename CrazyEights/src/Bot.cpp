@@ -6,7 +6,7 @@
 
 PlayerTurn Bot::AskPlayerForTurn(Card* topCard)
 {
-    bool canPlayerMatchCard = CanPlayerMatchCard(topCard);
+    const bool canPlayerMatchCard = CanPlayerMatchCard(topCard);
     if (canPlayerMatchCard)
         return PlayerTurn::PLACE;
     return PlayerTurn::DRAW;
@@ -14,9 +14,8 @@ PlayerTurn Bot::AskPlayerForTurn(Card* topCard)
 
 PlayerTurnResult Bot::HandlePlayerTurn(Round* round)
 {
-    PlayerTurnResult turnResult = PlayerTurnResult::PASS;
-    PlayerTurn playerTurn = AskPlayerForTurn(round->GetDiscardPile()->PeekTopCard());
-    switch (playerTurn)
+    const PlayerTurnResult turnResult = PlayerTurnResult::PASS;
+    switch (AskPlayerForTurn(round->GetDiscardPile()->PeekTopCard()))
     {
         case PlayerTurn::DRAW:
         {
@@ -42,7 +41,7 @@ PlayerTurnResult Bot::HandlePlayerTurn(Round* round)
         {
             Card* cardToPlace = nullptr;
             // See if the bot has an 8 to place
-            int eightCardIndex = FindCard(8);
+            const int eightCardIndex = FindCard(8);
             if (eightCardIndex != -1)
                 cardToPlace = PeekCard(eightCardIndex);
             // Otherwise, get the matching cards and pick a random one to place
@@ -51,7 +50,7 @@ PlayerTurnResult Bot::HandlePlayerTurn(Round* round)
                 std::vector<Card*> matchableCards = GetMatchableCards(round->GetDiscardPile()->PeekTopCard());
                 std::cout << "Matchable cards: ";
                 Utils::PrintCards(matchableCards, true, 1);
-                int cardToPlaceIndex = Utils::RandRange(0, matchableCards.size() - 1);
+                const int cardToPlaceIndex = Utils::RandRange(0, static_cast<int>(matchableCards.size()) - 1);
                 cardToPlace = matchableCards[cardToPlaceIndex];
             }
             // Take and place card onto discard pile. Will check if player wins and handle the type of card
@@ -65,7 +64,7 @@ PlayerTurnResult Bot::HandlePlayerTurn(Round* round)
     return turnResult;
 }
 
-bool Bot::HandlePlacingCard(Round* round, Card* card)
+PlayerPlaceCardResult Bot::HandlePlacingCard(Round* round, Card* card)
 {
     // Take and place card onto discard pile
     if (!round->DiscardCard(this, card))
@@ -74,22 +73,23 @@ bool Bot::HandlePlacingCard(Round* round, Card* card)
         if (card != nullptr)
             std::cout << ": " << card->ToString();
         std::cout << "!\n";
-        return false;
+        return PlayerPlaceCardResult::FAILED;
     }
     // Check if player's hand is empty (they win!)
     if (GetHandSize() == 0)
     {
         round->UpdateRoundState(RoundState::FINISHED); // Exit game while loop
         round->OnRoundFinished(this); // This player won!
+        return PlayerPlaceCardResult::WON;
     }
     // Check if the card placed was an 8. If so, randomly pick a suit to set it to
-    else if (card->GetRank() == 8)
+    if (card->GetRank() == 8)
     {
-        int newSuitOption = Utils::RandRange(0, 3);
+        const int newSuitOption = Utils::RandRange(0, 3);
         std::cout << "An eight was played! Pick the next suit ([1] Clubs, [2] Diamonds, [3] Hearts, [4] Spades): " <<
             newSuitOption << "\n";
         card->SetSuit(Utils::GetCardSuitFromOption(newSuitOption));
         std::cout << "Suit picked: " << card->GetSuit() << "\n";
     }
-    return true;
+    return PlayerPlaceCardResult::PLACED;
 }

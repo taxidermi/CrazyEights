@@ -7,6 +7,7 @@ class Card;
 
 enum class RoundState
 {
+	WAITING,
 	STARTING,
 	PLAYING,
 	FINISHED,
@@ -17,21 +18,27 @@ class Round
 {
 public:
 	Round(std::vector<Player*> plrs);
+	~Round();
+
+	/**
+	 * Clean up the round. Destroy's all decks and clears all references.
+	 */
+	void Cleanup();
 
 private:
 	std::vector<Player*> players = {};
 	Deck* cardDeck = nullptr;
 	Deck* discardPile = nullptr;
-	RoundState currentRoundState = RoundState::MAX;
-	RoundState previousRoundState = RoundState::MAX;
+	RoundState currentRoundState = RoundState::WAITING;
+	RoundState previousRoundState = RoundState::WAITING;
 
 public:
-	Deck* GetCardDeck();
-	Deck* GetDiscardPile();
+	Deck* GetCardDeck() const;
+	Deck* GetDiscardPile() const;
 
-	RoundState GetCurrentRoundState();
+	RoundState GetCurrentRoundState() const;
 	void SetCurrentRoundState(RoundState newState);
-	RoundState GetPreviousRoundState();
+	RoundState GetPreviousRoundState() const;
 	void SetPreviousRoundState(RoundState newState);
 	
 	/**
@@ -51,12 +58,12 @@ public:
 	 * @param card The card that is being placed.
 	 * @return True if the card was successfully removed and placed.
 	 */
-	bool DiscardCard(Player* player, Card* card);
+	bool DiscardCard(Player* player, Card* card) const;
 
-	void OnRoundFinished(Player* winningPlayer);
+	void OnRoundFinished(Player* winningPlayer) const;
 
 	/**
 	 * Refill the card deck with the discard pile. Leaves the current top card alone.
 	 */
-	void RefillDeck();
+	void RefillDeck() const;
 };

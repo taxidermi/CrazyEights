@@ -1,22 +1,23 @@
 #include "Deck.h"
 
 #include <algorithm>
-#include <ctime>
 #include <random>
 
-Deck::Deck(bool fillDeck, int fillDeckTimes)
+#include "Card.h"
+
+Deck::Deck(const bool fillDeck, const int fillDeckTimes)
 {
 	this->deck_vector = {};
 	if (fillDeck)
 		this->FillDeck(fillDeckTimes);
 }
 
-int Deck::GetSize()
+int Deck::GetSize() const
 {
-	return this->deck_vector.size();
+	return static_cast<int>(this->deck_vector.size());
 }
 
-bool Deck::IsEmpty()
+bool Deck::IsEmpty() const
 {
 	return this->deck_vector.empty();
 }
@@ -30,12 +31,16 @@ void Deck::Shuffle()
 
 void Deck::Clear()
 {
+	// Delete every pointer first (no dangling pointers or memory leaks), then clear the deck
+	// Reverse for loop because... todo: explain this
+	for (int i = static_cast<int>(this->deck_vector.size()) - 1; i > 0; i--)
+		delete this->deck_vector[i];
 	this->deck_vector.clear();
 }
 
-void Deck::FillDeck(int times)
+void Deck::FillDeck(const int times)
 {
-	for (int x = 0; x < times; x++)
+	/*for (int x = 0; x < times; x++)
 	{
 		//Iterates through all 13 cards for each suit separately.
 		for (int i = 1; i < 14; i++) {
@@ -57,6 +62,11 @@ void Deck::FillDeck(int times)
 			Card* n_card = new Card(i, "Spades");
 			this->deck_vector.push_back(n_card);
 		}
+	}*/
+	for (const std::string& suit : Card::CardSuits)
+	{
+		for (int i = 1; i < 14; i++)
+			this->deck_vector.push_back(new Card(i, suit));
 	}
 }
 
@@ -69,20 +79,20 @@ void Deck::AddCard(Card* new_card)
 		onCardAddedFunc(new_card);
 }
 
-Card* Deck::PeekCard(int index)
+Card* Deck::PeekCard(const int index) const
 {
 	if (index < 0 || index > this->deck_vector.size() - 1)
 		return nullptr;
 	return this->deck_vector[index];
 }
 
-Card* Deck::PeekTopCard()
+Card* Deck::PeekTopCard() const
 {
-	int top_card_index = this->GetSize() - 1;
+	const int top_card_index = this->GetSize() - 1;
 	return this->PeekCard(top_card_index);
 }
 
-Card* Deck::GetCard(int index)
+Card* Deck::GetCard(const int index)
 {
 	if (index < 0 || index > this->deck_vector.size() - 1)
 		return nullptr;
@@ -92,7 +102,7 @@ Card* Deck::GetCard(int index)
 	return card;
 }
 
-void Deck::RemoveCard(int index)
+void Deck::RemoveCard(const int index)
 {
 	if (index < 0 || index > this->deck_vector.size() - 1)
 		return;
@@ -104,6 +114,6 @@ void Deck::RemoveCard(int index)
 
 Card* Deck::GetTopCard()
 {
-	int top_card_index = this->GetSize() - 1;
+	const int top_card_index = this->GetSize() - 1;
 	return this->GetCard(top_card_index);
 }

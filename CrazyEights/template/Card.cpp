@@ -1,12 +1,13 @@
 #include "Card.h"
+#include "../src/Utils.h"
 
-Card::Card(int init_rank, std::string init_suit)
+Card::Card(const int init_rank, const std::string& init_suit)
 {
 	this->rank = init_rank;
 	this->suit = init_suit;
 }
 
-int Card::GetRank()
+int Card::GetRank() const
 {
 	return this->rank;
 }
@@ -16,12 +17,12 @@ std::string Card::GetSuit()
 	return this->suit;
 }
 
-void Card::SetRank(int new_rank)
+void Card::SetRank(const int new_rank)
 {
 	this->rank = new_rank;
 }
 
-void Card::SetSuit(std::string new_suit)
+void Card::SetSuit(const std::string& new_suit)
 {
 	this->suit = new_suit;
 }
@@ -41,13 +42,13 @@ std::string Card::ToString()
 	}
 }
 
-bool Card::DoesCardMatch(Card* otherCard)
+bool Card::DoesCardMatch(Card* otherCard) const
 {
 	return otherCard->GetRank() == this->rank || otherCard->GetSuit() == this->suit ||
 		this->GetRank() == 8; // The eights are crazy!!! (like a wildcard)
 }
 
-int Card::GetCardScore()
+int Card::GetCardScore() const
 {
 	switch (this->rank)
 	{
@@ -60,4 +61,11 @@ int Card::GetCardScore()
 		default: // Rest of the cards return the face value
 			return this->rank;
 	}
+}
+
+Card* Card::CreateRandomCard()
+{
+	const std::string suit = CardSuits[Utils::RandRange(0, 3)];
+	const int rank = Utils::RandRange(1, 13);
+	return new Card(rank, suit);
 }

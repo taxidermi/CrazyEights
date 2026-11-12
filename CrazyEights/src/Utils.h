@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <thread>
+#include <chrono>
 
 #include "../template/Card.h"
 
@@ -13,7 +15,7 @@ namespace Utils
 	 * @param max The max number
 	 * @return Random int between min and max
 	 */
-	static int RandRange(int min, int max)
+	static int RandRange(const int min, const int max)
 	{
 		return rand() % (max - min + 1) + min;
 	}
@@ -25,7 +27,7 @@ namespace Utils
 	 * @return The value that the user inputted, of type T
 	 */
 	template <typename T>
-	static T AskUserForInput(std::string askMessage)
+	static T AskUserForInput(const std::string& askMessage)
 	{
 		T userInput{};
 		std::cout << askMessage;
@@ -45,7 +47,7 @@ namespace Utils
 	 * @param max The maximum number allowed to enter.
 	 * @return The number that the user inputted
 	 */
-	static int AskUserForInput(std::string askMessage, int min, int max)
+	static int AskUserForInput(const std::string &askMessage, const int min, const int max)
 	{
 		int userInput;
 		std::cout << askMessage;
@@ -64,7 +66,7 @@ namespace Utils
 	 * @param includeCardIndex Should the index of the card be printed (in [] brackets)
 	 * @param cardIndexOffset Offset the card index, for making user input nicer
 	 */
-	static void PrintCards(const std::vector<Card*>& cards, bool includeCardIndex = false, int cardIndexOffset = 0)
+	static void PrintCards(const std::vector<Card*>& cards, const bool includeCardIndex = false, const int cardIndexOffset = 0)
 	{
 		for (int i = 0; i < cards.size(); ++i)
 		{
@@ -84,7 +86,7 @@ namespace Utils
 	 * @param splitter The splitter character
 	 * @param splitterLength How many '-' to print
 	 */
-	static void PrintSplitter(char splitter = '=', int splitterLength = 80)
+	static void PrintSplitter(const char splitter = '=', const int splitterLength = 80)
 	{
 		std::string splitterOutput;
 		for (int i = 0; i < splitterLength; ++i)
@@ -98,10 +100,10 @@ namespace Utils
 	 * @param splitter The splitter character
 	 * @param splitterLength The length of the splitter
 	 */
-	static void PrintTitle(std::string title, char splitter = '=', int splitterLength = 80)
+	static void PrintTitle(const std::string &title, const char splitter = '=', const int splitterLength = 80)
 	{
 		PrintSplitter(splitter, splitterLength);
-		int centerSpaces = (splitterLength - title.size()) / 2;
+		int centerSpaces = (splitterLength - static_cast<int>(title.size())) / 2;
 		std::cout << std::string(centerSpaces, ' ');
 		std::cout << title << "\n";
 		PrintSplitter(splitter, splitterLength);
@@ -112,24 +114,48 @@ namespace Utils
 	 * @param option The suit option
 	 * @return The suit string
 	 */
-	static std::string GetCardSuitFromOption(int option)
+	static std::string GetCardSuitFromOption(const int option)
 	{
 		switch (option)
 		{
 		case 0:
 			return "Clubs";
-			break;
 		case 1:
 			return "Diamonds";
-			break;
 		case 2:
 			return "Hearts";
-			break;
 		case 3:
 			return "Spades";
-			break;
 		default:
 			break;
 		}
+		return "";
+	}
+
+	/**
+	* Clear the console/terminal/screen.
+	* ToDo: Add multi-platform (windows + linux) support
+	*/
+	static void ClearConsole()
+	{
+		system("cls");
+	}
+
+	/**
+	* Sleep this thread for the given milliseconds.
+	* \param ms How long to sleep for, in milliseconds.
+	*/
+	static void SleepForMs(const int ms)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+	}
+
+	/**
+	* Sleep this thread for the given seconds.
+	* \param s How long to sleep for, in seconds.
+	*/
+	static void SleepForS(const int s)
+	{
+		std::this_thread::sleep_for(std::chrono::seconds(s));
 	}
 };

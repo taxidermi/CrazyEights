@@ -1,7 +1,8 @@
 #pragma once
 #include <vector>
-#include <string>
-#include "Card.h"
+#include <functional>
+
+class Card;
 
 /**
  * @brief Deck class represents a collection of cards in a vector format.
@@ -28,13 +29,13 @@ public:
 	 * Gets the size of the deck.
 	 * \return The number of cards in the deck.
 	 */
-	int GetSize();
+	int GetSize() const;
 
 	/**
 	 * Returns true/false depending on whether there are any cards in the deck.
 	 * \return boolean flag of if the deck is empty.
 	 */
-	bool IsEmpty();
+	bool IsEmpty() const;
 
 	/**
 	 * Shuffles the deck into a pseudo-random order.
@@ -63,14 +64,14 @@ public:
 	 * Returns the card at the top of deck. Will return the last card in the vector. Important to note is the card will not be removed from the deck.
 	 * \return Card object of the top card in the deck.
 	 */
-	Card* PeekTopCard();
+	Card* PeekTopCard() const;
 
 	/**
 	 * Returns the card at the given index. Important to note is the card will not be removed from the deck.
 	 * \param index The index of the desired card.
 	 * \return Card object of the card at the given index.
 	 */
-	Card* PeekCard(int index);
+	Card* PeekCard(int index) const;
 
 	/**
 	 * Removes and returns the card at the top of the deck. Will return the last card in the vector. Important to note is the card will be removed from the deck.

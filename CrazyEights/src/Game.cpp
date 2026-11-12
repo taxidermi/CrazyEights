@@ -5,17 +5,12 @@
 #include "Bot.h"
 #include "Round.h"
 
-Game::Game()
-{
-
-}
-
 std::vector<Player*> Game::GetPlayers()
 {
 	return players;
 }
 
-Round* Game::GetRound()
+Round* Game::GetRound() const
 {
 	return this->round;
 }
@@ -27,27 +22,27 @@ void Game::CreateNewRound()
 	round = new Round(players);
 }
 
-void Game::CreatePlayers(int numOfPlayers)
+void Game::CreatePlayers(const int numOfPlayers)
 {
 	for (int i = 0; i < numOfPlayers; i++)
 	{
-		const auto playerName = Utils::AskUserForInput<std::string>("Enter Player " +
+		const std::string playerName = Utils::AskUserForInput<std::string>("Enter Player " +
 			std::to_string(i + 1) + "'s name: "); // i + 1 because i starts at 0
 		players.push_back(new Player(playerName));
 	}
 	std::string output = "Created " + std::to_string(numOfPlayers) + " player";
 	if (numOfPlayers > 1)
-		output += "s";
+		output += 's';
 	std::cout << output << "!\n";
 }
 
-void Game::CreateBotPlayers(int numOfBots)
+void Game::CreateBotPlayers(const int numOfBots)
 {
 	for (int i = 0; i < numOfBots; i++)
 		players.push_back(new Bot(std::string("Bot " + std::to_string(i + 1))));
 	std::string output = "Created " + std::to_string(numOfBots) + " bot";
 	if (numOfBots > 1)
-		output += "s";
+		output += 's';
 	std::cout << output << "!\n";
 }
 
@@ -68,14 +63,14 @@ void Game::Start()
 	{
 		// Create and start a new round, using the players (and bots) that were created above
 		CreateNewRound();
-		if (round == nullptr)
-			break;
 		// Start the round
 		round->StartRound();
 		// Wait for round to finish (while loop)
+		// Once round is finished, this will continue here
+		// Print a round over title
 		Utils::PrintTitle("ROUND OVER", '=');
 		// Ask user if they want to restart or exit
-		int userGameOption = Utils::AskUserForInput("Please enter what you would like to do next ([1]: Restart, [2]: Exit): ", 1, 2);
+		const int userGameOption = Utils::AskUserForInput("Please enter what you would like to do next ([1]: Restart, [2]: Exit): ", 1, 2);
 		if (userGameOption == 1) // Restart
 		{
 			std::cout << "Restarting game...\n";

@@ -1,5 +1,5 @@
 #pragma once
-#include <iostream>
+#include <functional>
 #include <string>
 #include <vector>
 #include "Card.h"
@@ -17,6 +17,14 @@ enum class PlayerTurnResult
 {
 	PASS, // Pass to next player
 	WIN, // Player won
+	MAX
+};
+
+enum class PlayerPlaceCardResult
+{
+	PLACED, // Player placed the card
+	WON, // Player placed the card and won
+	FAILED, // Failed to place card
 	MAX
 };
 
@@ -48,7 +56,15 @@ public:
 	/**
 	 * Constructor to create a Player with a name. Hand starts empty, and score starts at 0.
 	 */
-	Player(std::string playerName);
+	Player(const std::string& playerName);
+
+	virtual ~Player() = default;
+
+	/**
+	 * Clean up this player. Clears their hand.
+	 */
+	void Cleanup();
+
 	/**
 	 * Gets the player's name.
 	 * \return The name of the player.
@@ -59,12 +75,12 @@ public:
 	 * Sets the player's name.
 	 * \param new_name The new name of the player, as a string.
 	 */
-	void SetName(std::string new_name);
+	void SetName(const std::string& new_name);
 	/**
 	 * Gets the number of cards in the player's hand.
 	 * \return the size of hand.
 	 */
-	int GetHandSize();
+	int GetHandSize() const;
 	/**
 	 * Gets the entire hand of the player.
 	 * \return The vector containing Card objects.
@@ -78,7 +94,7 @@ public:
 	 * Returns true/false depending on whether there are any cards in the player's hand.
 	 * \return boolean flag of if the player's hand is empty.
 	 */
-	bool IsEmpty();
+	bool IsEmpty() const;
 
 
 	/**
@@ -86,7 +102,7 @@ public:
 	 * \param index The index of the desired card.
 	 * \return Card object of the card at the given index.
 	 */
-	Card* PeekCard(int index);
+	Card* PeekCard(int index) const;
 	/**
 	 * Removes and returns the card at the given index. Important to note is the card will be removed from the player's hand.
 	 * \param index The index of the desired card.
@@ -115,11 +131,11 @@ public:
 	 * Calculates and returns the sum of all ranks from cards in the player's hand. Important to note is face cards are interpreted as 11, 12, and 13.
 	 * \return Sum of all cards in player's hand.
 	 */
-	int SumHand();
+	int SumHand() const;
 	/**
 	 * Iterates over all card objects in the player's hand and outputs each card's toString to terminal on separate lines.
 	 */
-	void OutputHand(bool includeCardIndex = false);
+	void OutputHand(bool includeCardIndex = false) const;
 
 	/**
 	 * Alter the player's score by given integer.
@@ -135,36 +151,36 @@ public:
 	 * Gets the player's score.
 	 * \return Player's score, given as an integer.
 	 */
-	int GetScore();
+	int GetScore() const;
 
 	/**
 	* Check if the player can match the other card.
 	* \return True if the player has a card that can match the other card.
 	*/
-	bool CanPlayerMatchCard(Card* otherCard);
+	bool CanPlayerMatchCard(Card* otherCard) const;
 
 	/**
 	* Search the player's hand for a card with the given rank.
 	* \return The index of the first card found, -1 if no card was found.
 	*/
-	int FindCard(int rank);
+	int FindCard(int rank) const;
 	/**
 	* Search the player's hand for a card with the given suit.
 	* \return The index of the first card found, -1 if no card was found.
 	*/
-	int FindCard(std::string suit);
+	int FindCard(const std::string& suit) const;
 	/**
 	* Search the player's hand for a card with the given rank and suit.
 	* \return The index of the first card found, -1 if no card was found.
 	*/
-	int FindCard(int rank, std::string suit);
+	int FindCard(int rank, const std::string& suit) const;
 
 	/**
 	 * Get all the cards that the player can match with the passed other card.
 	 * @param otherCard The other card to get all the cards the player can match with.
 	 * @return Vector of cards that can match the other card.
 	 */
-	std::vector<Card*> GetMatchableCards(Card* otherCard);
+	std::vector<Card*> GetMatchableCards(Card* otherCard) const;
 
 	/**
 	* Ask this player what they want to do, giving them the list of options to do.
@@ -184,9 +200,9 @@ private:
 	 * Handle this player placing a card. Happens during the 'HandlePlayerTurn' funcky-tion.
 	 * @param round Current round reference
 	 * @param card Card to place
-	 * @return True if the card was successfully removed, false if not/it failed.
+	 * @return The result of placing the card, includes "FAILED" and "WON".
 	 */
-	virtual bool HandlePlacingCard(Round* round, Card* card);
+	virtual PlayerPlaceCardResult HandlePlacingCard(Round* round, Card* card);
 
 public:
 	/**
