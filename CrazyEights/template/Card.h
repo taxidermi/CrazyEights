@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 /**
  * @brief Card class represents a single card when instantiated.
@@ -73,5 +74,20 @@ public:
 	* Create a random card and return it (Workshop session 5)
 	*/
 	static Card* CreateRandomCard();
+
+	/**
+	 * Get the suit from a user input option.
+	 * @param option The suit option
+	 * @return The suit string
+	 */
+	static std::string GetCardSuitFromOption(int option);
+
+	/**
+	 * Print the given vector of cards in one line and in a clean format.
+	 * @param cards The cards to output
+	 * @param includeCardIndex Should the index of the card be printed (in [] brackets)
+	 * @param cardIndexOffset Offset the card index, for making user input nicer
+	 */
+	static void PrintCards(const std::vector<Card*>& cards, bool includeCardIndex = false, int cardIndexOffset = 0);
 };
 

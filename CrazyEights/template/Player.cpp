@@ -1,8 +1,10 @@
 #include "Player.h"
 
-#include "../src/Utils.h"
+#include "../src/Utils/Utils.h"
 #include "../src/Round.h"
 #include "Deck.h"
+#include "Card.h"
+#include "../src/Utils/Input.h"
 
 Player::Player()
 {
@@ -115,7 +117,7 @@ void Player::OutputHand(const bool includeCardIndex) const
 	//Iterate through each card in hand and output toString for each one
 	/*for (Card* c : this->hand)
 		std::cout << c->ToString() << std::endl;*/
-	Utils::PrintCards(this->hand, includeCardIndex);
+	Card::PrintCards(this->hand, includeCardIndex);
 }
 
 void Player::ChangeScoreBy(const int toAdd)
@@ -197,7 +199,7 @@ PlayerTurn Player::AskPlayerForTurn(Card* topCard)
 {
 	const bool canPlayerMatchCard = CanPlayerMatchCard(topCard);
 	const std::string askMessage = "What would you like to do? Draw [1], Place [" + std::string(canPlayerMatchCard ? "2]" : "No matching cards]") + ": ";
-	const int playerTurnInput = Utils::AskUserForInput(askMessage, 1, canPlayerMatchCard ? 2 : 1);
+	const int playerTurnInput = Utils::Input::AskUserForInput(askMessage, 1, canPlayerMatchCard ? 2 : 1);
 	return static_cast<PlayerTurn>(playerTurnInput - 1); // We - 1 from it because the user input option starts at 1 (better for user)
 }
 
@@ -224,7 +226,7 @@ PlayerTurnResult Player::HandlePlayerTurn(Round* round)
 				Utils::SleepForMs(300);
 			}
 			// Give player option to place or keep(?) card
-			const int playerOption = Utils::AskUserForInput("What would you like to do with the drawn card? "
+			const int playerOption = Utils::Input::AskUserForInput("What would you like to do with the drawn card? "
 									   "([1] Keep, [2] Place): ", 1, 2);
 			if (playerOption == 1) // Keep drawn card
 				std::cout << "Keeping card, "; // no \n, adds the "ending turn" line to it
@@ -239,9 +241,9 @@ PlayerTurnResult Player::HandlePlayerTurn(Round* round)
 			std::cout << "Matchable cards: ";
 			// Print and ask user to pick a card to remove. The index is offset by 1, so they don't have to enter 0
 			// which is across the keyboard
-			Utils::PrintCards(matchableCards, true, 1);
-			Utils::SleepForMs(750);
-			const int cardToPlaceIndex = Utils::AskUserForInput("What card would you like to place?: ", 1,
+			Card::PrintCards(matchableCards, true, 1);
+			Utils::SleepForMs(400);
+			const int cardToPlaceIndex = Utils::Input::AskUserForInput("What card would you like to place?: ", 1,
 				static_cast<int>(matchableCards.size()));
 			Card* cardToPlace = matchableCards[cardToPlaceIndex - 1];
 			// Take and place card onto discard pile. Will check if player wins and handle the type of card
@@ -281,9 +283,9 @@ PlayerPlaceCardResult Player::HandlePlacingCard(Round* round, Card* card)
 	if (card->GetRank() == 8)
 	{
 		// Offset option/index by 1 so user doesn't have to press 0
-		const int newSuitOption = Utils::AskUserForInput("An eight was played! Pick the next suit ([1] Clubs, "
+		const int newSuitOption = Utils::Input::AskUserForInput("An eight was played! Pick the next suit ([1] Clubs, "
 											 "[2] Diamonds, [3] Hearts, [4] Spades): ", 1, 4);
-		card->SetSuit(Utils::GetCardSuitFromOption(newSuitOption - 1));
+		card->SetSuit(Card::GetCardSuitFromOption(newSuitOption - 1));
 		std::cout << "Suit picked: " << card->GetSuit() << "\n";
 	}
 	return PlayerPlaceCardResult::PLACED;

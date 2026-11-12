@@ -1,6 +1,7 @@
 /template/
 /TemplateFiles.zip
 /cmake-build-debug/
+/cmake-build-release/
 /.vs/
 /out/
-/cmake-build-release/
+/.idea/

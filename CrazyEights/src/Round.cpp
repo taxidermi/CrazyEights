@@ -4,9 +4,11 @@
 #include <algorithm>
 #include <random>
 
-#include "../src/Utils.h"
+#include "Utils/Utils.h"
 #include "../template/Deck.h"
 #include "../template/Player.h"
+#include "Utils/Console.h"
+#include "Utils/Input.h"
 
 Round::Round(std::vector<Player*> plrs)
 {
@@ -68,7 +70,7 @@ void Round::UpdateRoundState(const RoundState newState)
 
 void Round::StartRound()
 {
-	Utils::PrintTitle("STARTING ROUND", '=');
+	Utils::Console::PrintTitle("STARTING ROUND", '=');
 	UpdateRoundState(RoundState::STARTING);
 	Utils::SleepForMs(750);
 	// Setup card deck
@@ -77,8 +79,8 @@ void Round::StartRound()
 	// Ask how many decks to use. minCardDeckSize is set to 2 if there are 8 or more players so the deck doesn't become
 	// empty because the players took them all.
 	const int minCardDeckSize = players.size() >= 8 ? 2 : 1;
-	const int cardDeckSize = Utils::AskUserForInput("Please enter the number of card decks you want to play with (1-10): ",
-		minCardDeckSize, 10);
+	const int cardDeckSize = Utils::Input::AskUserForInput("Please enter the number of card decks you want "
+														"to play with (1-10): ",minCardDeckSize, 10);
 	cardDeck->FillDeck(cardDeckSize);
 	std::cout << "Created card deck with " << cardDeck->GetSize() << " cards!\n";
 	cardDeck->Shuffle();
@@ -98,7 +100,7 @@ void Round::StartRound()
 	// Start game
 	Utils::SleepForMs(500);
 	UpdateRoundState(RoundState::PLAYING);
-	Utils::PrintTitle("ROUND START", '=');
+	Utils::Console::PrintTitle("ROUND START", '=');
 	Utils::SleepForMs(500);
 	while (currentRoundState == RoundState::PLAYING)
 	{
@@ -109,7 +111,7 @@ void Round::StartRound()
 			if (currentRoundState == RoundState::FINISHED)
 				break;
 			// Output name, turn and their hand
-			Utils::PrintTitle(player->GetName() + "'s turn", '-');
+			Utils::Console::PrintTitle(player->GetName() + "'s turn", '-');
 			Utils::SleepForMs(750);
 			std::cout << "Your hand: ";
 			player->OutputHand();
@@ -125,7 +127,7 @@ void Round::StartRound()
 			Utils::SleepForMs(500);
 		}
 	}
-	// Round over, delete this round object, which will call "Cleanup()", and go back to Game::Start()
+	// Round over, delete this round object, which will call "Cleanup()", and go back to Game::StartGame()
 	delete this;
 }
 

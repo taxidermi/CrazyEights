@@ -1,5 +1,7 @@
 #include "Card.h"
-#include "../src/Utils.h"
+
+#include "../src/Utils/Math.h"
+#include "../src/Utils/Utils.h"
 
 const std::string Card::CardSuits[4] = { "Clubs", "Diamonds", "Hearts", "Spades" };
 
@@ -67,7 +69,40 @@ int Card::GetCardScore() const
 
 Card* Card::CreateRandomCard()
 {
-	const std::string suit = CardSuits[Utils::RandRange(0, 3)];
-	const int rank = Utils::RandRange(1, 13);
+	const std::string suit = CardSuits[Utils::Math::RandRange(0, 3)];
+	const int rank = Utils::Math::RandRange(1, 13);
 	return new Card(rank, suit);
+}
+
+std::string Card::GetCardSuitFromOption(const int option)
+{
+	switch (option)
+	{
+		case 0:
+			return "Clubs";
+		case 1:
+			return "Diamonds";
+		case 2:
+			return "Hearts";
+		case 3:
+			return "Spades";
+		default:
+			break;
+	}
+	return "";
+}
+
+void Card::PrintCards(const std::vector<Card*>& cards, const bool includeCardIndex, const int cardIndexOffset)
+{
+	for (int i = 0; i < cards.size(); ++i)
+	{
+		Card* card = cards.at(i);
+		if (card == nullptr)
+			continue;
+		std::cout << (includeCardIndex ? std::string("[" + std::to_string(i + cardIndexOffset) + "] ") : "")
+			<< card->ToString();
+		if (i != cards.size() - 1)
+			std::cout << ", ";
+	}
+	std::cout << "\n";
 }

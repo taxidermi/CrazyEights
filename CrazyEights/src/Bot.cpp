@@ -1,8 +1,11 @@
 #include "Bot.h"
 
-#include "Utils.h"
+#include <iostream>
+
+#include "Utils/Utils.h"
 #include "Round.h"
 #include "../template/Deck.h"
+#include "Utils/Math.h"
 
 PlayerTurn Bot::AskPlayerForTurn(Card* topCard)
 {
@@ -50,9 +53,9 @@ PlayerTurnResult Bot::HandlePlayerTurn(Round* round)
             {
                 std::vector<Card*> matchableCards = GetMatchableCards(round->GetDiscardPile()->PeekTopCard());
                 std::cout << "Matchable cards: ";
-                Utils::PrintCards(matchableCards, true, 1);
-                Utils::SleepForMs(500);
-                const int cardToPlaceIndex = Utils::RandRange(0, static_cast<int>(matchableCards.size()) - 1);
+                Card::PrintCards(matchableCards, true, 1);
+                Utils::SleepForMs(400);
+                const int cardToPlaceIndex = Utils::Math::RandRange(0, static_cast<int>(matchableCards.size()) - 1);
                 cardToPlace = matchableCards[cardToPlaceIndex];
             }
             // Take and place card onto discard pile. Will check if player wins and handle the type of card
@@ -87,11 +90,11 @@ PlayerPlaceCardResult Bot::HandlePlacingCard(Round* round, Card* card)
     // Check if the card placed was an 8. If so, randomly pick a suit to set it to
     if (card->GetRank() == 8)
     {
-        const int newSuitOption = Utils::RandRange(0, 3);
+        const int newSuitOption = Utils::Math::RandRange(0, 3);
         std::cout << "An eight was played! Pick the next suit ([1] Clubs, [2] Diamonds, [3] Hearts, [4] Spades): ";
         Utils::SleepForMs(250);
         std::cout << newSuitOption << "\n";
-        card->SetSuit(Utils::GetCardSuitFromOption(newSuitOption));
+        card->SetSuit(Card::GetCardSuitFromOption(newSuitOption));
         std::cout << "Suit picked: " << card->GetSuit() << "\n";
     }
     return PlayerPlaceCardResult::PLACED;
