@@ -1,6 +1,8 @@
 #include "Card.h"
 #include "../src/Utils.h"
 
+const std::string Card::CardSuits[4] = { "Clubs", "Diamonds", "Hearts", "Spades" };
+
 Card::Card(const int init_rank, const std::string& init_suit)
 {
 	this->rank = init_rank;

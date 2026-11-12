@@ -31,6 +31,7 @@ PlayerTurnResult Bot::HandlePlayerTurn(Round* round)
                     continue;
                 AddCard(drawnCard);
                 std::cout << "Drew card: " << drawnCard->ToString() << "\n";
+                Utils::SleepForMs(150);
             }
             // Once bot draws card, get them to place it
             // Take and place card onto discard pile. Will check if player wins
@@ -50,6 +51,7 @@ PlayerTurnResult Bot::HandlePlayerTurn(Round* round)
                 std::vector<Card*> matchableCards = GetMatchableCards(round->GetDiscardPile()->PeekTopCard());
                 std::cout << "Matchable cards: ";
                 Utils::PrintCards(matchableCards, true, 1);
+                Utils::SleepForMs(500);
                 const int cardToPlaceIndex = Utils::RandRange(0, static_cast<int>(matchableCards.size()) - 1);
                 cardToPlace = matchableCards[cardToPlaceIndex];
             }
@@ -86,8 +88,9 @@ PlayerPlaceCardResult Bot::HandlePlacingCard(Round* round, Card* card)
     if (card->GetRank() == 8)
     {
         const int newSuitOption = Utils::RandRange(0, 3);
-        std::cout << "An eight was played! Pick the next suit ([1] Clubs, [2] Diamonds, [3] Hearts, [4] Spades): " <<
-            newSuitOption << "\n";
+        std::cout << "An eight was played! Pick the next suit ([1] Clubs, [2] Diamonds, [3] Hearts, [4] Spades): ";
+        Utils::SleepForMs(250);
+        std::cout << newSuitOption << "\n";
         card->SetSuit(Utils::GetCardSuitFromOption(newSuitOption));
         std::cout << "Suit picked: " << card->GetSuit() << "\n";
     }

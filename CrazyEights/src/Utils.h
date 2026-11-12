@@ -21,6 +21,16 @@ namespace Utils
 	}
 
 	/**
+	 * Wait for the user to enter any input.
+	 */
+	static void WaitForUserInput()
+	{
+		std::cin.ignore();
+		std::cin.clear();
+		std::cin.get();
+	}
+
+	/**
 	 * Ask the user for input. Outputs a message before allowing input.
 	 * @tparam T The type of value to return.
 	 * @param askMessage What message to output before allowing input.

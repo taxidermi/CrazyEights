@@ -204,6 +204,7 @@ PlayerTurn Player::AskPlayerForTurn(Card* topCard)
 PlayerTurnResult Player::HandlePlayerTurn(Round* round)
 {
 	PlayerTurnResult turnResult = PlayerTurnResult::PASS;
+	// Ask player for their turn
 	switch (AskPlayerForTurn(round->GetDiscardPile()->PeekTopCard()))
 	{
 		case PlayerTurn::DRAW:
@@ -220,9 +221,10 @@ PlayerTurnResult Player::HandlePlayerTurn(Round* round)
 					continue;
 				AddCard(drawnCard);
 				std::cout << "Drew card: " << drawnCard->ToString() << "\n";
+				Utils::SleepForMs(300);
 			}
 			// Give player option to place or keep(?) card
-			int playerOption = Utils::AskUserForInput("What would you like to do with the drawn card? "
+			const int playerOption = Utils::AskUserForInput("What would you like to do with the drawn card? "
 									   "([1] Keep, [2] Place): ", 1, 2);
 			if (playerOption == 1) // Keep drawn card
 				std::cout << "Keeping card, "; // no \n, adds the "ending turn" line to it
@@ -238,6 +240,7 @@ PlayerTurnResult Player::HandlePlayerTurn(Round* round)
 			// Print and ask user to pick a card to remove. The index is offset by 1, so they don't have to enter 0
 			// which is across the keyboard
 			Utils::PrintCards(matchableCards, true, 1);
+			Utils::SleepForMs(750);
 			const int cardToPlaceIndex = Utils::AskUserForInput("What card would you like to place?: ", 1,
 				static_cast<int>(matchableCards.size()));
 			Card* cardToPlace = matchableCards[cardToPlaceIndex - 1];

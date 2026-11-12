@@ -70,6 +70,7 @@ void Round::StartRound()
 {
 	Utils::PrintTitle("STARTING ROUND", '=');
 	UpdateRoundState(RoundState::STARTING);
+	Utils::SleepForMs(750);
 	// Setup card deck
 	if (!cardDeck->IsEmpty())
 		cardDeck->Clear();
@@ -92,8 +93,10 @@ void Round::StartRound()
 	// Take the top card from the deck and place it in the discard pile
 	discardPile->AddCard(cardDeck->GetTopCard());
 	// Start game
+	Utils::SleepForMs(500);
 	UpdateRoundState(RoundState::PLAYING);
 	Utils::PrintTitle("ROUND START", '=');
+	Utils::SleepForMs(500);
 	while (currentRoundState == RoundState::PLAYING)
 	{
 		// Loop through all players to let them perform their turn
@@ -104,15 +107,19 @@ void Round::StartRound()
 				break;
 			// Output name, turn and their hand
 			Utils::PrintTitle(player->GetName() + "'s turn", '-');
+			Utils::SleepForMs(750);
 			std::cout << "Your hand: ";
 			player->OutputHand();
+			Utils::SleepForMs(500);
 			// Print the top card so the player knows what card they need to match
 			std::cout << "Top card: " << GetDiscardPile()->PeekTopCard()->ToString() << "\n";
+			Utils::SleepForMs(500);
 			// Handle and perform player's turn. Asks the player what they want to do: place or draw.
 			// If the player is a bot then it will do it's own logic
 			PlayerTurnResult turnResult = player->HandlePlayerTurn(this);
 			if (turnResult != PlayerTurnResult::WIN) // If player hasn't won, end their turn
 				std::cout << "End of " << player->GetName() << "'s turn\n";
+			Utils::SleepForMs(500);
 		}
 	}
 	// Round over, delete this round object, which will call "Cleanup()", and go back to Game::Start()
@@ -121,6 +128,7 @@ void Round::StartRound()
 
 void Round::OnRoundFinished(Player* winningPlayer) const {
 	std::cout << winningPlayer->GetName() << " Wins! ";
+	Utils::SleepForMs(500);
 	// Total up the score for the winning player
 	int totalScore = 0;
 	for (Player* player : players)
@@ -132,7 +140,9 @@ void Round::OnRoundFinished(Player* winningPlayer) const {
 	}
 	winningPlayer->SetScore(totalScore);
 	std::cout << "Winning score: " << std::to_string(totalScore) << "\n";
+	Utils::SleepForMs(250);
 	std::cout << "Ending round...\n";
+	Utils::SleepForMs(1000);
 }
 
 bool Round::DiscardCard(Player* player, Card* card) const {

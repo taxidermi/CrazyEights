@@ -7,7 +7,7 @@
 class Card
 {
 public:
-	static constexpr std::string CardSuits[4] = { "Clubs", "Diamonds", "Hearts", "Spades" };
+	static const std::string CardSuits[4]; // Declared/initalized in the source file
 
 private:
 	/**
