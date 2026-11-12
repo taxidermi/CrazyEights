@@ -31,7 +31,7 @@ void Card::SetSuit(const std::string& new_suit)
 
 std::string Card::ToString()
 {
-	switch (this->rank)
+	switch (this->GetRank())
 	{
 		case 11:
 			return "Jack of " + this->GetSuit();

@@ -74,8 +74,11 @@ void Round::StartRound()
 	// Setup card deck
 	if (!cardDeck->IsEmpty())
 		cardDeck->Clear();
+	// Ask how many decks to use. minCardDeckSize is set to 2 if there are 8 or more players so the deck doesn't become
+	// empty because the players took them all.
+	const int minCardDeckSize = players.size() >= 8 ? 2 : 1;
 	const int cardDeckSize = Utils::AskUserForInput("Please enter the number of card decks you want to play with (1-10): ",
-		1, 10);
+		minCardDeckSize, 10);
 	cardDeck->FillDeck(cardDeckSize);
 	std::cout << "Created card deck with " << cardDeck->GetSize() << " cards!\n";
 	cardDeck->Shuffle();

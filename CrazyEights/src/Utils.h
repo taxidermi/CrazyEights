@@ -144,11 +144,16 @@ namespace Utils
 
 	/**
 	* Clear the console/terminal/screen.
-	* ToDo: Add multi-platform (windows + linux) support
+	* ToDo: Test multi-platform (windows + linux) support
 	*/
 	static void ClearConsole()
 	{
+#ifdef _WIN32
 		system("cls");
+#endif
+#ifdef __unix__
+		system("clear");
+#endif
 	}
 
 	/**
