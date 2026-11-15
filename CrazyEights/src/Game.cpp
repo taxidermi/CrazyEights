@@ -128,7 +128,8 @@ void Game::StartGame()
 		// Print a round over title
 		Utils::Console::PrintTitle("ROUND OVER", '=');
 		// Ask user if they want to restart or exit
-		const int userGameOption = Utils::Input::AskUserForInput("Please enter what you would like to do next ([1]: Restart, [2]: Menu): ", 1, 2);
+		const int userGameOption = Utils::Input::AskUserForInput("Please enter what you would like to do "
+														   "next ([1]: Restart, [2]: Menu): ", 1, 2);
 		if (userGameOption == 1) // Restart
 		{
 			std::cout << "Restarting game...\n";

@@ -63,10 +63,16 @@ void Deck::FillDeck(const int times)
 			this->deck_vector.push_back(n_card);
 		}
 	}*/
-	for (const std::string& suit : Card::CardSuits)
+
+	// Loop adding a deck of cards x amount of times
+	for (int x = 0; x < times; x++)
 	{
-		for (int i = 1; i < 14; i++)
-			this->deck_vector.push_back(new Card(i, suit));
+		// For each suit, add the corresponding ranks
+		for (const std::string& suit : Card::CardSuits)
+		{
+			for (int i = 1; i < 14; i++)
+				this->deck_vector.push_back(new Card(i, suit));
+		}
 	}
 }
 

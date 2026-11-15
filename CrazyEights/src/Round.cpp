@@ -80,7 +80,7 @@ void Round::StartRound()
 	// empty because the players took them all.
 	const int minCardDeckSize = players.size() >= 8 ? 2 : 1;
 	const int cardDeckSize = Utils::Input::AskUserForInput("Please enter the number of card decks you want "
-														"to play with (1-10): ",minCardDeckSize, 10);
+														"to play with (1-10): ", minCardDeckSize, 10);
 	cardDeck->FillDeck(cardDeckSize);
 	std::cout << "Created card deck with " << cardDeck->GetSize() << " cards!\n";
 	cardDeck->Shuffle();
