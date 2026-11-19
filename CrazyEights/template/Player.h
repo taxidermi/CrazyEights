@@ -70,12 +70,12 @@ public:
 	 * \return The name of the player.
 	 */
 	std::string GetName();
-
 	/**
 	 * Sets the player's name.
 	 * \param new_name The new name of the player, as a string.
 	 */
 	void SetName(const std::string& new_name);
+
 	/**
 	 * Gets the number of cards in the player's hand.
 	 * \return the size of hand.
@@ -95,7 +95,6 @@ public:
 	 * \return boolean flag of if the player's hand is empty.
 	 */
 	bool IsEmpty() const;
-
 
 	/**
 	 * Returns the card at the given index. Important to note is the card will not be removed from the player's hand.
@@ -119,23 +118,44 @@ public:
 	 * \param index The index of the card to be removed.
 	 */
 	void RemoveCard(int index);
-
 	/**
 	 * Removes the card from the player's hand, if found.
 	 * \param cardToRemove The card pointer to remove
 	 * \return True if the card was removed, false if it was not found/removed.
 	 */
 	bool RemoveCard(Card* cardToRemove);
-
 	/**
-	 * Calculates and returns the sum of all ranks from cards in the player's hand. Important to note is face cards are interpreted as 11, 12, and 13.
-	 * \return Sum of all cards in player's hand.
-	 */
-	int SumHand() const;
+	* Search the player's hand for a card with the given rank.
+	* \return The index of the first card found, -1 if no card was found.
+	*/
+	int FindCard(int rank) const;
 	/**
-	 * Iterates over all card objects in the player's hand and outputs each card's toString to terminal on separate lines.
+	* Search the player's hand for a card with the given suit.
+	* \return The index of the first card found, -1 if no card was found.
+	*/
+	int FindCard(const std::string& suit) const;
+	/**
+	* Search the player's hand for a card with the given rank and suit.
+	* \return The index of the first card found, -1 if no card was found.
+	*/
+	int FindCard(int rank, const std::string& suit) const;
+	/**
+	 * Get the given card's index in the player's hand.
+	 * @param cardToFind Pointer to the card to search for.
+	 * @return The index of the passed card, -1 if it was not found.
 	 */
-	void OutputHand(bool includeCardIndex = false) const;
+	int GetCardIndex(const Card* cardToFind) const;
+	/**
+	 * Get all the cards that the player can match with the passed other card.
+	 * @param otherCard The other card to get all the cards the player can match with.
+	 * @return Vector of cards that can match the other card.
+	 */
+	std::vector<Card*> GetMatchableCards(Card* otherCard) const;
+	/**
+	* Check if the player can match the other card.
+	* \return True if the player has a card that can match the other card.
+	*/
+	bool CanPlayerMatchCard(Card* otherCard) const;
 
 	/**
 	 * Alter the player's score by given integer.
@@ -152,35 +172,11 @@ public:
 	 * \return Player's score, given as an integer.
 	 */
 	int GetScore() const;
-
 	/**
-	* Check if the player can match the other card.
-	* \return True if the player has a card that can match the other card.
-	*/
-	bool CanPlayerMatchCard(Card* otherCard) const;
-
-	/**
-	* Search the player's hand for a card with the given rank.
-	* \return The index of the first card found, -1 if no card was found.
-	*/
-	int FindCard(int rank) const;
-	/**
-	* Search the player's hand for a card with the given suit.
-	* \return The index of the first card found, -1 if no card was found.
-	*/
-	int FindCard(const std::string& suit) const;
-	/**
-	* Search the player's hand for a card with the given rank and suit.
-	* \return The index of the first card found, -1 if no card was found.
-	*/
-	int FindCard(int rank, const std::string& suit) const;
-
-	/**
-	 * Get all the cards that the player can match with the passed other card.
-	 * @param otherCard The other card to get all the cards the player can match with.
-	 * @return Vector of cards that can match the other card.
+	 * Calculates and returns the sum of all ranks from cards in the player's hand. Important to note is face cards are interpreted as 11, 12, and 13.
+	 * \return Sum of all cards in player's hand.
 	 */
-	std::vector<Card*> GetMatchableCards(Card* otherCard) const;
+	int SumHand() const;
 
 	/**
 	* Ask this player what they want to do, giving them the list of options to do.
@@ -194,6 +190,21 @@ public:
 	 * @return Result of their turn, if they win or pass their turn
 	 */
 	virtual PlayerTurnResult HandlePlayerTurn(Round* round);
+
+	/**
+	 * Output every card this player has to the console.
+	 * @param includeCardIndex Print out the card index in brackets.
+	 * @param cardIndexOffset Offset the outputted index by this value. Example use case would be if you want the player
+	 * to input a card to use/place, but you dont want them to have to reach over to 0.
+	 * @param cardToMatch The player's cards will be colored in red or green depending on if the player can
+	 * match this passed card.
+	 */
+	void OutputHand(bool includeCardIndex = false, int cardIndexOffset = 0, Card* cardToMatch = nullptr) const;
+
+	/**
+	 * Output a turn title message for this player.
+	 */
+	void OutputPlayerTurnTitle();
 
 private:
 	/**

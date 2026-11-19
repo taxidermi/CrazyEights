@@ -1,5 +1,7 @@
 #include "Card.h"
 
+#include "../src/Utils/Color.h"
+#include "../src/Utils/Console.h"
 #include "../src/Utils/Math.h"
 #include "../src/Utils/Utils.h"
 
@@ -92,17 +94,30 @@ std::string Card::GetCardSuitFromOption(const int option)
 	return "";
 }
 
-void Card::PrintCards(const std::vector<Card*>& cards, const bool includeCardIndex, const int cardIndexOffset)
+void Card::PrintCards(const std::vector<Card*>& cards, const bool includeCardIndex, const int cardIndexOffset, Card* cardToMatch)
 {
 	for (int i = 0; i < cards.size(); ++i)
 	{
 		Card* card = cards.at(i);
 		if (card == nullptr)
 			continue;
-		std::cout << (includeCardIndex ? std::string("[" + std::to_string(i + cardIndexOffset) + "] ") : "")
-			<< card->ToString();
+		std::string cardOutput = (includeCardIndex ? std::string("[" + std::to_string(i + cardIndexOffset) + "] ") : "")
+			+ card->ToString();
+		// If there are more cards to output, add a comma and/or a space to the end of this card's output text.
 		if (i != cards.size() - 1)
-			std::cout << ", ";
+		{
+			if (cardToMatch == nullptr) // Add comma and a space
+				cardOutput += ", ";
+			else // Card to match, only add a comma as "PrintColoredText()" adds a space to the end
+				cardOutput += ',';
+		}
+		// If there is no card to match, output the card as normal
+		if (cardToMatch == nullptr)
+			std::cout << cardOutput;
+		// If there is a card to match, output the card text red or green, depending on if they match or not
+		else
+			Utils::Console::PrintColoredText(cardOutput, card->DoesCardMatch(cardToMatch) ?
+				Utils::Color::ConsoleColor::BRIGHTGREEN : Utils::Color::ConsoleColor::BRIGHTRED);
 	}
 	std::cout << "\n";
 }

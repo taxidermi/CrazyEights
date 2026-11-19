@@ -4,6 +4,8 @@
 #include <vector>
 #include <chrono>
 
+#include "Console.h"
+
 namespace Utils::Input
 {
     /**
@@ -41,12 +43,18 @@ namespace Utils::Input
      * @param askMessage What message to output before allowing input.
      * @param min The minimum number allowed to enter.
      * @param max The maximum number allowed to enter.
+     * @param animated Should the outputted message be animated.
+     * @param animatedDelayBetweenCharacters The animated delay between each outputted character.
      * @return The number that the user inputted
      */
-    static int AskUserForInput(const std::string &askMessage, const int min, const int max)
+    static int AskUserForInput(const std::string &askMessage, const int min, const int max, const bool animated = false,
+        const int animatedDelayBetweenCharacters = 20)
     {
         int userInput;
-        std::cout << askMessage;
+        if (animated)
+            Console::PrintAnimated(askMessage, animatedDelayBetweenCharacters, false);
+        else
+            std::cout << askMessage;
         while (!(std::cin >> userInput) || userInput < min || userInput > max) {
             std::cin.clear(); // Clear error flags
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore bad input

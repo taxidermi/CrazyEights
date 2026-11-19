@@ -57,14 +57,14 @@ void Player::ClearHand()
 	this->hand.clear();
 }
 
-Card* Player::PeekCard(const int index) const
-{
-	return this->hand[index];
-}
-
 bool Player::IsEmpty() const
 {
 	return this->hand.empty();
+}
+
+Card* Player::PeekCard(const int index) const
+{
+	return this->hand[index];
 }
 
 Card* Player::GetCard(const int index)
@@ -101,46 +101,6 @@ bool Player::RemoveCard(Card* cardToRemove)
 			RemoveCard(i);
 			return true;
 		}
-	}
-	return false;
-}
-
-int Player::SumHand() const {
-	int total = 0;
-	for (Card* c : this->hand)
-		total += c->GetRank();
-	return total;
-}
-
-void Player::OutputHand(const bool includeCardIndex) const
-{
-	//Iterate through each card in hand and output toString for each one
-	/*for (Card* c : this->hand)
-		std::cout << c->ToString() << std::endl;*/
-	Card::PrintCards(this->hand, includeCardIndex);
-}
-
-void Player::ChangeScoreBy(const int toAdd)
-{
-	this->score += toAdd;
-}
-
-void Player::SetScore(const int newScore)
-{
-	this->score = newScore;
-}
-
-int Player::GetScore() const
-{
-	return this->score;
-}
-
-bool Player::CanPlayerMatchCard(Card* otherCard) const
-{
-	for (Card* card : this->hand)
-	{
-		if (card->DoesCardMatch(otherCard))
-			return true;
 	}
 	return false;
 }
@@ -184,6 +144,17 @@ int Player::FindCard(const int rank, const std::string &suit) const
 	return -1;
 }
 
+int Player::GetCardIndex(const Card* cardToFind) const
+{
+	for (int i = 0; i < GetHandSize(); i++)
+	{
+		Card* card = PeekCard(i);
+		if (card == cardToFind)
+			return true;
+	}
+	return -1;
+}
+
 std::vector<Card*> Player::GetMatchableCards(Card* otherCard) const
 {
 	std::vector<Card*> matchableCards = {};
@@ -193,6 +164,38 @@ std::vector<Card*> Player::GetMatchableCards(Card* otherCard) const
 			matchableCards.push_back(card);
 	}
 	return matchableCards;
+}
+
+bool Player::CanPlayerMatchCard(Card* otherCard) const
+{
+	for (Card* card : this->hand)
+	{
+		if (card->DoesCardMatch(otherCard))
+			return true;
+	}
+	return false;
+}
+
+void Player::ChangeScoreBy(const int toAdd)
+{
+	this->score += toAdd;
+}
+
+void Player::SetScore(const int newScore)
+{
+	this->score = newScore;
+}
+
+int Player::GetScore() const
+{
+	return this->score;
+}
+
+int Player::SumHand() const {
+	int total = 0;
+	for (Card* c : this->hand)
+		total += c->GetRank();
+	return total;
 }
 
 PlayerTurn Player::AskPlayerForTurn(Card* topCard)
@@ -237,21 +240,26 @@ PlayerTurnResult Player::HandlePlayerTurn(Round* round)
 		}
 		case PlayerTurn::PLACE:
 		{
-			std::vector<Card*> matchableCards = GetMatchableCards(round->GetDiscardPile()->PeekTopCard());
-			std::cout << "Matchable cards: ";
-			// Print and ask user to pick a card to remove. The index is offset by 1, so they don't have to enter 0
-			// which is across the keyboard
-			Card::PrintCards(matchableCards, true, 1);
-			Utils::SleepForMs(400);
-			const int cardToPlaceIndex = Utils::Input::AskUserForInput("What card would you like to place?: ", 1,
-				static_cast<int>(matchableCards.size()));
-			Card* cardToPlace = matchableCards[cardToPlaceIndex - 1];
-			// Take and place card onto discard pile. Will check if player wins and handle the type of card
-			PlayerPlaceCardResult placeCardResult = HandlePlacingCard(round, cardToPlace);
-			if (placeCardResult == PlayerPlaceCardResult::PLACED)
-				turnResult = PlayerTurnResult::PASS;
-			else if (placeCardResult == PlayerPlaceCardResult::WON)
-				turnResult = PlayerTurnResult::WIN;
+			while (true)
+			{
+				const int cardToPlaceIndex = Utils::Input::AskUserForInput("What card would you like to place?: ",
+				1,GetHandSize());
+				// Get the card index to remove. -1 off the index, as the player's hand output is offset with the same value
+				Card* cardToPlace = PeekCard(cardToPlaceIndex - 1);
+				// Check if the player can place the card
+				if (!cardToPlace->DoesCardMatch(round->GetDiscardPile()->PeekTopCard())) // Card does not match the top card
+					std::cout << "You cannot place this card, it does not match the top card!\n";
+				else // Card does match the top card, selected card can be placed
+				{
+					// Take and place card onto discard pile. Will check if player wins and handle the type of card
+					PlayerPlaceCardResult placeCardResult = HandlePlacingCard(round, cardToPlace);
+					if (placeCardResult == PlayerPlaceCardResult::PLACED)
+						turnResult = PlayerTurnResult::PASS;
+					else if (placeCardResult == PlayerPlaceCardResult::WON)
+						turnResult = PlayerTurnResult::WIN;
+					break;
+				}
+			}
 			break;
 		}
 	default:
@@ -289,6 +297,26 @@ PlayerPlaceCardResult Player::HandlePlacingCard(Round* round, Card* card)
 		std::cout << "Suit picked: " << card->GetSuit() << "\n";
 	}
 	return PlayerPlaceCardResult::PLACED;
+}
+
+void Player::OutputHand(const bool includeCardIndex, const int cardIndexOffset, Card* cardToMatch) const
+{
+	//Iterate through each card in hand and output toString for each one
+	/*for (Card* c : this->hand)
+		std::cout << c->ToString() << std::endl;*/
+	Card::PrintCards(this->hand, includeCardIndex, cardIndexOffset, cardToMatch);
+}
+
+void Player::OutputPlayerTurnTitle()
+{
+	//Utils::Console::PrintTitle(player->GetName() + "'s turn", '-');
+	Utils::Console::PrintSplitter('-', 80);
+	const std::string title = GetName() + "'s turn";
+	const int centerSpaces = (80 - static_cast<int>(title.size())) / 2;
+	std::cout << std::string(centerSpaces, ' ');
+	Utils::Console::PrintColoredText(GetName(), Utils::Color::ConsoleColor::BRIGHTRED);
+	std::cout << "'s turn";
+	Utils::Console::PrintSplitter('=', 80);
 }
 
 void Player::OnCardAdded(Card* card)

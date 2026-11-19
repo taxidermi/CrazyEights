@@ -50,5 +50,5 @@ public:
 
 	Round* GetRound() const;
 
-
+	void PrintWelcomeMessage();
 };

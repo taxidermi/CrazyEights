@@ -5,6 +5,8 @@
 #include "Utils/Utils.h"
 #include "Round.h"
 #include "../template/Deck.h"
+#include "Utils/Color.h"
+#include "Utils/Console.h"
 #include "Utils/Math.h"
 
 PlayerTurn Bot::AskPlayerForTurn(Card* topCard)
@@ -22,9 +24,10 @@ PlayerTurnResult Bot::HandlePlayerTurn(Round* round)
     {
         case PlayerTurn::DRAW:
         {
-            // Draw card(s) until
+            // Draw card(s) until a matchable card is drawn
             Card* drawnCard = nullptr;
-            while (drawnCard == nullptr || !drawnCard->DoesCardMatch(round->GetDiscardPile()->PeekTopCard()))
+            Card* topCard = round->GetDiscardPile()->GetTopCard();
+            while (drawnCard == nullptr || !drawnCard->DoesCardMatch(topCard))
             {
                 // If the draw deck is empty, refill it using the discard pile
                 if (round->GetCardDeck()->IsEmpty())
@@ -33,8 +36,9 @@ PlayerTurnResult Bot::HandlePlayerTurn(Round* round)
                 if (drawnCard == nullptr)
                     continue;
                 AddCard(drawnCard);
-                std::cout << "Drew card: " << drawnCard->ToString() << "\n";
-                Utils::SleepForMs(150);
+                std::cout << "Drew card: ";
+                Utils::Console::PrintColoredText(drawnCard->ToString(), drawnCard->DoesCardMatch(topCard) ?
+                    Utils::Color::ConsoleColor::BRIGHTGREEN : Utils::Color::ConsoleColor::BRIGHTRED);
             }
             // Once bot draws card, get them to place it
             // Take and place card onto discard pile. Will check if player wins
@@ -48,15 +52,14 @@ PlayerTurnResult Bot::HandlePlayerTurn(Round* round)
             const int eightCardIndex = FindCard(8);
             if (eightCardIndex != -1)
                 cardToPlace = PeekCard(eightCardIndex);
-            // Otherwise, get the matching cards and pick a random one to place
-            else
+            else // Otherwise, get the matching cards and pick a random one to place
             {
+                // Pick a random matchable card to output
                 std::vector<Card*> matchableCards = GetMatchableCards(round->GetDiscardPile()->PeekTopCard());
-                std::cout << "Matchable cards: ";
-                Card::PrintCards(matchableCards, true, 1);
-                Utils::SleepForMs(400);
                 const int cardToPlaceIndex = Utils::Math::RandRange(0, static_cast<int>(matchableCards.size()) - 1);
                 cardToPlace = matchableCards[cardToPlaceIndex];
+                // Output a "fake" ask user input message to the console
+                std::cout << "What card would you like to place?: " << GetCardIndex(cardToPlace) << "\n";
             }
             // Take and place card onto discard pile. Will check if player wins and handle the type of card
             HandlePlacingCard(round, cardToPlace);

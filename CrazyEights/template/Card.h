@@ -87,7 +87,8 @@ public:
 	 * @param cards The cards to output
 	 * @param includeCardIndex Should the index of the card be printed (in [] brackets)
 	 * @param cardIndexOffset Offset the card index, for making user input nicer
+	 * @param cardToMatch Outputted cards will be green if they can match the passed card, red if not.
 	 */
-	static void PrintCards(const std::vector<Card*>& cards, bool includeCardIndex = false, int cardIndexOffset = 0);
+	static void PrintCards(const std::vector<Card*>& cards, bool includeCardIndex = false, int cardIndexOffset = 0, Card* cardToMatch = nullptr);
 };
 

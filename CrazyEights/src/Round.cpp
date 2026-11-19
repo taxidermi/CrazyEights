@@ -80,9 +80,12 @@ void Round::StartRound()
 	// empty because the players took them all.
 	const int minCardDeckSize = players.size() >= 8 ? 2 : 1;
 	const int cardDeckSize = Utils::Input::AskUserForInput("Please enter the number of card decks you want "
-														"to play with (1-10): ", minCardDeckSize, 10);
+														"to play with (1-10): ", minCardDeckSize, 10, true);
 	cardDeck->FillDeck(cardDeckSize);
 	std::cout << "Created card deck with " << cardDeck->GetSize() << " cards!\n";
+	Utils::Console::PrintAnimated("Created card deck with ", 20, false);
+	Utils::Console::PrintColoredLine(std::to_string(cardDeckSize), Utils::Color::ConsoleColor::BRIGHTGREEN);
+	Utils::Console::PrintAnimated("cards!");
 	cardDeck->Shuffle();
 	// Setup players
 	// Shuffle players array to randomise the order
@@ -110,14 +113,14 @@ void Round::StartRound()
 			// Check if the current round is finished before giving turn
 			if (currentRoundState == RoundState::FINISHED)
 				break;
-			// Output name, turn and their hand
-			Utils::Console::PrintTitle(player->GetName() + "'s turn", '-');
+			// Output name, top card and their hand
+			player->OutputPlayerTurnTitle();
 			Utils::SleepForMs(750);
-			std::cout << "Your hand: ";
-			player->OutputHand();
+			Card* topCard = GetDiscardPile()->PeekTopCard(); // Print the top card so the player knows what card they need to match
+			std::cout << "Top card: " << topCard->ToString() << "\n";
 			Utils::SleepForMs(500);
-			// Print the top card so the player knows what card they need to match
-			std::cout << "Top card: " << GetDiscardPile()->PeekTopCard()->ToString() << "\n";
+			std::cout << "Your hand: ";
+			player->OutputHand(true, 1, topCard);
 			Utils::SleepForMs(500);
 			// Handle and perform player's turn. Asks the player what they want to do: place or draw.
 			// If the player is a bot then it will do it's own logic

@@ -4,6 +4,7 @@
 #include "../template/Player.h"
 #include "Bot.h"
 #include "Round.h"
+#include "Utils/Color.h"
 #include "Utils/Console.h"
 #include "Utils/Input.h"
 
@@ -62,6 +63,18 @@ void Game::CreateBotPlayers(const int numOfBots)
 	std::cout << output << "!\n";
 }
 
+void Game::PrintWelcomeMessage()
+{
+	Utils::Console::PrintSplitter('=', 80);
+	const std::string title = "Welcome to Crazy Eights!";
+	const int centerSpaces = (80 - static_cast<int>(title.size())) / 2;
+	std::cout << std::string(centerSpaces, ' ');
+	Utils::Console::PrintColoredText("Welcome to", Utils::Color::ConsoleColor::BRIGHTWHITE);
+	Utils::Console::PrintColorfulLine("Crazy Eights!");
+	Utils::Console::PrintSplitter('=', 80);
+	//std::cout << "\033[38;2;255;82;197mHello" << std::endl; // testing, sets the console color pinkl
+}
+
 void Game::Setup()
 {
 	// Start the running loop
@@ -69,9 +82,9 @@ void Game::Setup()
 	while (runningLoop)
 	{
 		Utils::Console::Clear();
-		Utils::Console::PrintTitle("Welcome to Crazy Eights!");
+		PrintWelcomeMessage();
 		Utils::SleepForMs(750);
-		switch (Utils::Input::AskUserForInput("Select an option ([1] Play [2] Rules [3] Exit): ", 1, 3))
+		switch (Utils::Input::AskUserForInput("Select an option ([1] Play [2] Rules [3] Exit): ", 1, 3, true))
 		{
 			case 1: // Play
 				StartGame();
