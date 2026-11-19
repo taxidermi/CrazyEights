@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "Utils.h"
-#include "Color.h"
+#include "../Structs/Color.h"
 
 namespace Utils::Console
 {
@@ -27,9 +27,9 @@ namespace Utils::Console
 	 * @param output What to output to the console.
 	 * @param color The color to use.
 	 */
-	static void PrintColoredLine(const std::string& output, const Color::ConsoleColor color)
+	static void PrintColoredLine(const std::string& output, const Color color)
 	{
-		std::cout << "\x1B[" << GetConsoleColorCode(color) << "m" << output << "\033[0m\t\t\n";
+		std::cout << color.GetConsoleColorOutput() << output << "\033[0m\t\t\n";
 	}
 
 	/**
@@ -38,9 +38,9 @@ namespace Utils::Console
 	 * @param color The color to use.
 	 * @param endSpace Should a space be added to the end?
 	 */
-	static void PrintColoredText(const char output, const Color::ConsoleColor color, const bool endSpace = true)
+	static void PrintColoredText(const char output, const Color color, const bool endSpace = true)
 	{
-		std::cout << "\x1B[" << Color::GetConsoleColorCode(color) << "m" << output << "\033[0m";
+		std::cout << color.GetConsoleColorOutput() << output << "\033[0m";
 		if (endSpace)
 			std::cout << ' ';
 	}
@@ -51,16 +51,16 @@ namespace Utils::Console
 	 * @param color The color to use.
 	 * @param endSpace Should a space be added to the end?
 	 */
-	static void PrintColoredText(const std::string& output, const Color::ConsoleColor color, const bool endSpace = true)
+	static void PrintColoredText(const std::string& output, const Color color, const bool endSpace = true)
 	{
-		std::cout << "\x1B[" << Color::GetConsoleColorCode(color) << "m" << output << "\033[0m";
+		std::cout << color.GetConsoleColorOutput() << output << "\033[0m";
 		if (endSpace)
 			std::cout << ' ';
 	}
 
-	static const std::vector<Color::ConsoleColor> ColorfulLineColors = {
-		Color::ConsoleColor::BRIGHTRED, Color::ConsoleColor::BRIGHTYELLOW, Color::ConsoleColor::BRIGHTGREEN,
-		Color::ConsoleColor::BRIGHTCYAN, Color::ConsoleColor::BRIGHTBLUE, Color::ConsoleColor::BRIGHTMAGENTA
+	static const std::vector<Color> ColorfulLineColors = {
+		Colors::Red, Colors::Orange, Colors::Yellow, Colors::Lime, Colors::Green, Colors::Aqua, Colors::LightBlue,
+		Colors::Blue, Colors::DeepBlue, Colors::Purple, Colors::HotPink, Colors::Pink
 	};
 
 	/**
@@ -108,7 +108,7 @@ namespace Utils::Console
 	 * @param output The text to output. Note that any "\n" will not work.
 	 * @param delayBetweenCharacters The milliseconds between each output.
 	 */
-	static void PrintAnimated(const std::string& output, Color::ConsoleColor color, const int delayBetweenCharacters = 20,
+	static void PrintAnimated(const std::string& output, Color color, const int delayBetweenCharacters = 20,
 		const bool newLine = true)
 	{
 		for (const char i : output)
@@ -166,7 +166,7 @@ namespace Utils::Console
 	 * @param color The color of the splitter
 	 * @param splitterLength How many '-' to print
 	 */
-	static void PrintSplitter(const char splitter = '=', Color::ConsoleColor color = Color::ConsoleColor::WHITE,
+	static void PrintSplitter(const char splitter = '=', const Color color = Colors::White,
 		const int splitterLength = 80)
 	{
 		std::string splitterOutput;
@@ -198,7 +198,7 @@ namespace Utils::Console
 	 * @param splitter The splitter character
 	 * @param splitterLength The length of the splitter
 	 */
-	static void PrintTitle(const std::string& title, Color::ConsoleColor splitterColor, Color::ConsoleColor titleColor,
+	static void PrintTitle(const std::string& title, const Color splitterColor, const Color titleColor,
 		const char splitter = '=', const int splitterLength = 80)
 	{
 		PrintSplitter(splitter, splitterColor, splitterLength);
@@ -215,7 +215,7 @@ namespace Utils::Console
 	 * @param splitterColor The splitter color
 	 * @param splitterLength The length of the splitter
 	 */
-	static void PrintColorfulTitle(const std::string& title, Color::ConsoleColor splitterColor, const char splitter = '=',
+	static void PrintColorfulTitle(const std::string& title, const Color splitterColor, const char splitter = '=',
 		const int splitterLength = 80)
 	{
 		PrintSplitter(splitter, splitterColor, splitterLength);

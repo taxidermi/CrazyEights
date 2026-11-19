@@ -1,6 +1,5 @@
 #include "Card.h"
 
-#include "../src/Utils/Color.h"
 #include "../src/Utils/Console.h"
 #include "../src/Utils/Math.h"
 #include "../src/Utils/Utils.h"
@@ -117,7 +116,7 @@ void Card::PrintCards(const std::vector<Card*>& cards, const bool includeCardInd
 		// If there is a card to match, output the card text red or green, depending on if they match or not
 		else
 			Utils::Console::PrintColoredText(cardOutput, card->DoesCardMatch(cardToMatch) ?
-				Utils::Color::ConsoleColor::BRIGHTGREEN : Utils::Color::ConsoleColor::BRIGHTRED);
+				Colors::Green : Colors::Red);
 	}
 	std::cout << "\n";
 }

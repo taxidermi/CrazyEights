@@ -84,7 +84,7 @@ void Round::StartRound()
 	cardDeck->FillDeck(cardDeckSize);
 	std::cout << "Created card deck with " << cardDeck->GetSize() << " cards!\n";
 	Utils::Console::PrintAnimated("Created card deck with ", 20, false);
-	Utils::Console::PrintColoredLine(std::to_string(cardDeckSize), Utils::Color::ConsoleColor::BRIGHTGREEN);
+	Utils::Console::PrintColoredLine(std::to_string(cardDeckSize), Colors::Green);
 	Utils::Console::PrintAnimated("cards!");
 	cardDeck->Shuffle();
 	// Setup players

@@ -5,7 +5,6 @@
 #include "Utils/Utils.h"
 #include "Round.h"
 #include "../template/Deck.h"
-#include "Utils/Color.h"
 #include "Utils/Console.h"
 #include "Utils/Math.h"
 
@@ -38,7 +37,7 @@ PlayerTurnResult Bot::HandlePlayerTurn(Round* round)
                 AddCard(drawnCard);
                 std::cout << "Drew card: ";
                 Utils::Console::PrintColoredText(drawnCard->ToString(), drawnCard->DoesCardMatch(topCard) ?
-                    Utils::Color::ConsoleColor::BRIGHTGREEN : Utils::Color::ConsoleColor::BRIGHTRED);
+                    Colors::Green : Colors::Red);
             }
             // Once bot draws card, get them to place it
             // Take and place card onto discard pile. Will check if player wins

@@ -4,7 +4,7 @@
 #include "../template/Player.h"
 #include "Bot.h"
 #include "Round.h"
-#include "Utils/Color.h"
+#include "Structs/Color.h"
 #include "Utils/Console.h"
 #include "Utils/Input.h"
 
@@ -69,10 +69,10 @@ void Game::PrintWelcomeMessage()
 	const std::string title = "Welcome to Crazy Eights!";
 	const int centerSpaces = (80 - static_cast<int>(title.size())) / 2;
 	std::cout << std::string(centerSpaces, ' ');
-	Utils::Console::PrintColoredText("Welcome to", Utils::Color::ConsoleColor::BRIGHTWHITE);
+	Utils::Console::PrintColoredText("Welcome to", Colors::White);
 	Utils::Console::PrintColorfulLine("Crazy Eights!");
 	Utils::Console::PrintSplitter('=', 80);
-	//std::cout << "\033[38;2;255;82;197mHello" << std::endl; // testing, sets the console color pinkl
+	//std::cout << Colors::Red.GetConsoleColorOutput() + "Hello!\033[0m\n"; // testing, sets the console color pinkl
 }
 
 void Game::Setup()

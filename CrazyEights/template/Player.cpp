@@ -314,7 +314,7 @@ void Player::OutputPlayerTurnTitle()
 	const std::string title = GetName() + "'s turn";
 	const int centerSpaces = (80 - static_cast<int>(title.size())) / 2;
 	std::cout << std::string(centerSpaces, ' ');
-	Utils::Console::PrintColoredText(GetName(), Utils::Color::ConsoleColor::BRIGHTRED);
+	Utils::Console::PrintColoredText(GetName(), Colors::Red);
 	std::cout << "'s turn";
 	Utils::Console::PrintSplitter('=', 80);
 }

@@ -8,7 +8,6 @@ add_executable (CrazyEights "main.cpp" "template/Card.h" "template/Card.cpp" "te
         src/Utils/Console.h
         src/Utils/Input.h
         src/Utils/Math.h
-        src/Utils/Color.h
         src/Structs/Color.h)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
