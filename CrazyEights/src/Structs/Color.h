@@ -59,6 +59,10 @@ public:
         return {static_cast<float>(r / 255), static_cast<float>(g / 255), static_cast<float>(b / 255), static_cast<float>(a / 255)};
     }
 
+    /**
+     * Get the correct console output string to change the console text (foreground) color to this.
+     * @return The formatted string output for std::cout
+     */
     std::string GetConsoleColorOutput() const
     {
         const int r = R * 255.0f;
@@ -73,6 +77,7 @@ namespace Colors
     static const Color White = Color(1.0f, 1.0f, 1.0f);
     static const Color Black = Color(0.0f, 0.0f, 0.0f);
     static const Color Red = Color(1.0f, 0.0f, 0.0f);
+    static const Color LightRed = Color(1.0f, 0.33f, 0.0f);
     static const Color Orange = Color(1.0f, 0.67f, 0.0f);
     static const Color Yellow = Color(1.0f, 1.0f, 0.0f);
     static const Color Lime = Color(0.67f, 1.0f, 0.0f);
@@ -85,4 +90,9 @@ namespace Colors
     static const Color HotPink = Color(1.0f, 0.0f, 1.0f);
 
     static const Color Pink = Color(1.0f, 0.6f, 0.95f);
+
+    static const std::vector<Color> PlayerColors =
+    {
+        LightRed, Orange, Yellow, Lime, Green, Aqua, LightBlue, DeepBlue, Purple, HotPink, Pink
+    };
 }

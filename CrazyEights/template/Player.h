@@ -34,7 +34,6 @@ enum class PlayerPlaceCardResult
  */
 class Player
 {
-private:
 	/**
 	 * Name of the player playing. Private, so must be accessed through indirectly through functions.
 	 */
@@ -48,15 +47,20 @@ private:
 	 */
 	int score;
 
+	/**
+	 * This player's color, only for visuals, does not affect the game/gameplay
+	 */
+	Color playerColor = Colors::White;
+
 public:
 	/**
 	 * Constructor to create a Player. Sets player name to "Unamed Player", hand starts empty, and score starts at 0.
 	 */
 	Player();
 	/**
-	 * Constructor to create a Player with a name. Hand starts empty, and score starts at 0.
+	 * Constructor to create a Player with a name and a color (defaults to white). Hand starts empty, and score starts at 0.
 	 */
-	Player(const std::string& playerName);
+	Player(const std::string& playerName, Color color = Colors::White);
 
 	virtual ~Player() = default;
 
@@ -96,6 +100,9 @@ public:
 	 */
 	bool IsEmpty() const;
 
+	Color GetPlayerColor() const;
+	void SetPlayerColor(Color newColor);
+
 	/**
 	 * Returns the card at the given index. Important to note is the card will not be removed from the player's hand.
 	 * \param index The index of the desired card.
@@ -123,7 +130,7 @@ public:
 	 * \param cardToRemove The card pointer to remove
 	 * \return True if the card was removed, false if it was not found/removed.
 	 */
-	bool RemoveCard(Card* cardToRemove);
+	bool RemoveCard(const Card* cardToRemove);
 	/**
 	* Search the player's hand for a card with the given rank.
 	* \return The index of the first card found, -1 if no card was found.

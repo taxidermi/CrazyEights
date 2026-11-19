@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "Structs/Color.h"
 
 class Player;
 class Round;
@@ -7,11 +8,19 @@ class Round;
 class Game
 {
 public:
+	Game();
 	~Game();
 
 private:
 	std::vector<Player*> players = {};
 	Round* round = nullptr;
+	std::vector<Color> playerColorsAvailable = {}; // List of available player colors
+
+	/**
+	 * Get and remove a random color from the playerColorsAvailable list.
+	 * @return
+	 */
+	Color GetRandomPlayerColor();
 
 	/**
 	 * Create a new round object. Delete's the previous round object if it exists.

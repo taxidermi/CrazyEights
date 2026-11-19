@@ -18,7 +18,7 @@ PlayerTurn Bot::AskPlayerForTurn(Card* topCard)
 
 PlayerTurnResult Bot::HandlePlayerTurn(Round* round)
 {
-    const PlayerTurnResult turnResult = PlayerTurnResult::PASS;
+    constexpr PlayerTurnResult turnResult = PlayerTurnResult::PASS;
     switch (AskPlayerForTurn(round->GetDiscardPile()->PeekTopCard()))
     {
         case PlayerTurn::DRAW:
@@ -54,11 +54,11 @@ PlayerTurnResult Bot::HandlePlayerTurn(Round* round)
             else // Otherwise, get the matching cards and pick a random one to place
             {
                 // Pick a random matchable card to output
-                std::vector<Card*> matchableCards = GetMatchableCards(round->GetDiscardPile()->PeekTopCard());
+                const std::vector<Card*> matchableCards = GetMatchableCards(round->GetDiscardPile()->PeekTopCard());
                 const int cardToPlaceIndex = Utils::Math::RandRange(0, static_cast<int>(matchableCards.size()) - 1);
                 cardToPlace = matchableCards[cardToPlaceIndex];
                 // Output a "fake" ask user input message to the console
-                std::cout << "What card would you like to place?: " << GetCardIndex(cardToPlace) << "\n";
+                std::cout << "What card would you like to place?: " << GetCardIndex(cardToPlace + 1) << "\n";
             }
             // Take and place card onto discard pile. Will check if player wins and handle the type of card
             HandlePlacingCard(round, cardToPlace);

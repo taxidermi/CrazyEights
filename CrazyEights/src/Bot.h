@@ -5,7 +5,7 @@
 class Bot : public Player
 {
 public:
-	Bot(const std::string& botName) : Player(botName) {}
+	Bot(const std::string& botName, const Color color) : Player(botName, color) {}
 
 	PlayerTurn AskPlayerForTurn(Card* topCard) override;
 	PlayerTurnResult HandlePlayerTurn(Round* round) override;

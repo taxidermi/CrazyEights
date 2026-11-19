@@ -82,10 +82,10 @@ void Round::StartRound()
 	const int cardDeckSize = Utils::Input::AskUserForInput("Please enter the number of card decks you want "
 														"to play with (1-10): ", minCardDeckSize, 10, true);
 	cardDeck->FillDeck(cardDeckSize);
-	std::cout << "Created card deck with " << cardDeck->GetSize() << " cards!\n";
+	//std::cout << "Created card deck with " << cardDeck->GetSize() << " cards!\n";
 	Utils::Console::PrintAnimated("Created card deck with ", 20, false);
-	Utils::Console::PrintColoredLine(std::to_string(cardDeckSize), Colors::Green);
-	Utils::Console::PrintAnimated("cards!");
+	Utils::Console::PrintAnimated(std::to_string(cardDeck->GetSize()), Colors::Green, 20, false);
+	Utils::Console::PrintAnimated(" cards!");
 	cardDeck->Shuffle();
 	// Setup players
 	// Shuffle players array to randomise the order
@@ -143,7 +143,7 @@ void Round::OnRoundFinished(Player* winningPlayer) const {
 	{
 		if (player == winningPlayer)
 			continue;
-		for (Card* card : player->GetHand())
+		for (const Card* card : player->GetHand())
 			totalScore += card->GetCardScore();
 	}
 	winningPlayer->SetScore(totalScore);

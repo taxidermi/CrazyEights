@@ -10,7 +10,6 @@ class Card;
  */
 class Deck
 {
-private:
 	/**
 	 * Vector of Card objects. Private, so must be accessed through indirectly through functions.
 	 */

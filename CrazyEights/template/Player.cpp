@@ -5,19 +5,22 @@
 #include "Deck.h"
 #include "Card.h"
 #include "../src/Utils/Input.h"
+#include "../src/Structs/Color.h"
 
 Player::Player()
 {
 	this->name = "Unamed Player";
 	this->hand = {};
 	this->score = 0;
+	this->playerColor = Colors::White;
 }
 
-Player::Player(const std::string& playerName)
+Player::Player(const std::string& playerName, const Color color)
 {
 	this->name = playerName;
 	this->hand = {};
 	this->score = 0;
+	this->playerColor = color;
 }
 
 void Player::Cleanup()
@@ -51,7 +54,7 @@ void Player::ClearHand()
 	// things from a vector causes it to get updated and move items up or down.
 	for (int i = GetHandSize() - 1; i >= 0; --i)
 	{
-		Card* card = GetCard(i); // Get the card, which also removes it from the hand vector
+		const Card* card = GetCard(i); // Get the card, which also removes it from the hand vector
 		delete card;
 	}
 	this->hand.clear();
@@ -60,6 +63,16 @@ void Player::ClearHand()
 bool Player::IsEmpty() const
 {
 	return this->hand.empty();
+}
+
+Color Player::GetPlayerColor() const
+{
+	return playerColor;
+}
+
+void Player::SetPlayerColor(const Color newColor)
+{
+	playerColor = newColor;
 }
 
 Card* Player::PeekCard(const int index) const
@@ -91,7 +104,7 @@ void Player::RemoveCard(const int index)
 		onCardRemovedFunc(card);
 }
 
-bool Player::RemoveCard(Card* cardToRemove)
+bool Player::RemoveCard(const Card* cardToRemove)
 {
 	for (int i = 0; i < this->hand.size(); i++)
 	{
@@ -109,7 +122,7 @@ int Player::FindCard(const int rank) const
 {
 	for (int i = 0; i < GetHandSize(); i++)
 	{
-		Card* card = PeekCard(i);
+		const Card* card = PeekCard(i);
 		if (card == nullptr)
 			continue;
 		if (card->GetRank() == rank)
@@ -168,7 +181,7 @@ std::vector<Card*> Player::GetMatchableCards(Card* otherCard) const
 
 bool Player::CanPlayerMatchCard(Card* otherCard) const
 {
-	for (Card* card : this->hand)
+	for (const Card* card : this->hand)
 	{
 		if (card->DoesCardMatch(otherCard))
 			return true;
@@ -193,7 +206,7 @@ int Player::GetScore() const
 
 int Player::SumHand() const {
 	int total = 0;
-	for (Card* c : this->hand)
+	for (const Card* c : this->hand)
 		total += c->GetRank();
 	return total;
 }
@@ -216,7 +229,8 @@ PlayerTurnResult Player::HandlePlayerTurn(Round* round)
 		{
 			// Draw card(s) until a matching card is drawn
 			Card* drawnCard = nullptr;
-			while (drawnCard == nullptr || !drawnCard->DoesCardMatch(round->GetDiscardPile()->PeekTopCard()))
+			Card* topCard = round->GetDiscardPile()->GetTopCard();
+			while (drawnCard == nullptr || !drawnCard->DoesCardMatch(topCard))
 			{
 				// If the draw deck is empty, refill it using the discard pile
 				if (round->GetCardDeck()->IsEmpty())
@@ -225,7 +239,9 @@ PlayerTurnResult Player::HandlePlayerTurn(Round* round)
 				if (drawnCard == nullptr)
 					continue;
 				AddCard(drawnCard);
-				std::cout << "Drew card: " << drawnCard->ToString() << "\n";
+				std::cout << "Drew card: ";
+				Utils::Console::PrintColoredText(drawnCard->ToString(), drawnCard->DoesCardMatch(topCard) ?
+					Colors::Green : Colors::Red);
 				Utils::SleepForMs(300);
 			}
 			// Give player option to place or keep(?) card
@@ -314,9 +330,9 @@ void Player::OutputPlayerTurnTitle()
 	const std::string title = GetName() + "'s turn";
 	const int centerSpaces = (80 - static_cast<int>(title.size())) / 2;
 	std::cout << std::string(centerSpaces, ' ');
-	Utils::Console::PrintColoredText(GetName(), Colors::Red);
-	std::cout << "'s turn";
-	Utils::Console::PrintSplitter('=', 80);
+	Utils::Console::PrintColoredText(GetName(), GetPlayerColor(), false);
+	std::cout << "'s turn\n";
+	Utils::Console::PrintSplitter('-', 80);
 }
 
 void Player::OnCardAdded(Card* card)

@@ -7,6 +7,12 @@
 #include "Structs/Color.h"
 #include "Utils/Console.h"
 #include "Utils/Input.h"
+#include "Utils/Math.h"
+
+Game::Game()
+{
+	playerColorsAvailable = Colors::PlayerColors;
+}
 
 Game::~Game()
 {
@@ -32,6 +38,16 @@ Round* Game::GetRound() const
 	return this->round;
 }
 
+Color Game::GetRandomPlayerColor()
+{
+	if (playerColorsAvailable.empty())
+		return Colors::White;
+	const int colorIndex = Utils::Math::RandRange(0, static_cast<int>(playerColorsAvailable.size()) - 1);
+	const Color color = playerColorsAvailable[colorIndex];
+	playerColorsAvailable.erase(playerColorsAvailable.begin() + colorIndex);
+	return color;
+}
+
 void Game::CreateNewRound()
 {
 	if (round != nullptr)
@@ -45,7 +61,7 @@ void Game::CreatePlayers(const int numOfPlayers)
 	{
 		const std::string playerName = Utils::Input::AskUserForInput<std::string>("Enter Player " +
 			std::to_string(i + 1) + "'s name: "); // i + 1 because i starts at 0
-		players.push_back(new Player(playerName));
+		players.push_back(new Player(playerName, GetRandomPlayerColor()));
 	}
 	std::string output = "Created " + std::to_string(numOfPlayers) + " player";
 	if (numOfPlayers > 1)
@@ -56,7 +72,7 @@ void Game::CreatePlayers(const int numOfPlayers)
 void Game::CreateBotPlayers(const int numOfBots)
 {
 	for (int i = 0; i < numOfBots; i++)
-		players.push_back(new Bot(std::string("Bot " + std::to_string(i + 1))));
+		players.push_back(new Bot(std::string("Bot " + std::to_string(i + 1)), GetRandomPlayerColor()));
 	std::string output = "Created " + std::to_string(numOfBots) + " bot";
 	if (numOfBots > 1)
 		output += 's';
@@ -72,7 +88,6 @@ void Game::PrintWelcomeMessage()
 	Utils::Console::PrintColoredText("Welcome to", Colors::White);
 	Utils::Console::PrintColorfulLine("Crazy Eights!");
 	Utils::Console::PrintSplitter('=', 80);
-	//std::cout << Colors::Red.GetConsoleColorOutput() + "Hello!\033[0m\n"; // testing, sets the console color pinkl
 }
 
 void Game::Setup()

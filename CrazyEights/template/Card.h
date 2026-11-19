@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 
+#include "../src/Structs/Color.h"
+
 /**
  * @brief Card class represents a single card when instantiated.
  */
@@ -90,5 +92,10 @@ public:
 	 * @param cardToMatch Outputted cards will be green if they can match the passed card, red if not.
 	 */
 	static void PrintCards(const std::vector<Card*>& cards, bool includeCardIndex = false, int cardIndexOffset = 0, Card* cardToMatch = nullptr);
+
+	static const Color ClubsColor;
+	static const Color DiamondsColor;
+	static const Color HeartsColor;
+	static const Color SpadesColor;
 };
 

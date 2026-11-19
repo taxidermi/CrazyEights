@@ -106,7 +106,9 @@ namespace Utils::Console
 	/**
 	 * Print a colored message to the console character by character by sleeping between each character.
 	 * @param output The text to output. Note that any "\n" will not work.
+	 * @param color The text color
 	 * @param delayBetweenCharacters The milliseconds between each output.
+	 * @param newLine Should a new line be started once the output is finished.
 	 */
 	static void PrintAnimated(const std::string& output, Color color, const int delayBetweenCharacters = 20,
 		const bool newLine = true)
@@ -124,6 +126,7 @@ namespace Utils::Console
 	 * Print a colorful message to the console character by character by sleeping between each character.
 	 * @param output The text to output. Note that any "\n" will not work.
 	 * @param delayBetweenCharacters The milliseconds between each output.
+	 * @param newLine Should a new line be started once the output is finished.
 	 */
 	static void PrintColorfulAnimated(const std::string& output, const int delayBetweenCharacters = 20,
 		const bool newLine = true)
